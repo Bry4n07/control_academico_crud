@@ -22,7 +22,7 @@
             <h2 class="text-xl font-bold mb-4 text-slate-800 border-b pb-2">Gestión de Cursos</h2>
 
             <form action="/cursos_estudiantes" method="POST"
-                class="mb-6 grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border" onsubmit="return validarCurso()">
+                class="mb-6 grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border" onsubmit="return validarCurso('nombre_curso')">
                 <input type="hidden" name="action" value="crear_curso">
                 <div>
                     <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre del Curso</label>
@@ -34,7 +34,7 @@
                     <select id="profesor_id" name="profesor_id"
                         class="w-full border rounded p-2 text-sm bg-white focus:outline-none focus:border-blue-500">
                         {% for prof in profesores %}
-                        <option value="{{ prof.id }}">{{ prof.nombre }} ({{ prof.usuario }})</option>
+                        <option value="{{ prof.id }}">{{ prof.nombre }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -57,7 +57,8 @@
                     <tr class="border-b hover:bg-slate-50">
                         <td class="py-3 px-3 font-medium text-slate-900">{{ curso.curso_nombre }}</td>
                         <td class="py-3 px-3 text-slate-600">{{ curso.profesor_nombre or 'Sin profesor asignado' }}</td>
-                        <td class="py-3 px-3 text-center">
+                        <td class="py-3 px-3 text-center space-x-2">
+                            <button onclick="abrirModalCurso('{{ curso.id }}', '{{ curso.curso_nombre }}')" class="text-amber-600 hover:underline">Editar</button>
                             <a href="/cursos/eliminar/{{ curso.id }}" onclick="return confirm('¿Eliminar curso?')"
                                 class="text-red-500 hover:underline">Eliminar</a>
                         </td>
@@ -72,8 +73,7 @@
 
             <form action="/cursos_estudiantes" method="POST"
                 class="mb-6 grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border"
-                onsubmit="return validarEstudiante()">
-                <input type="hidden" name="action" value="crear_student">
+                onsubmit="return validarEstudiante('nombre_estudiante')">
                 <input type="hidden" name="action" value="crear_estudiante">
                 <div>
                     <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre Completo del Alumno</label>
@@ -95,12 +95,12 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% endfor %}
                     {% for est in estudiantes %}
                     <tr class="border-b hover:bg-slate-50">
                         <td class="py-3 px-3 text-slate-500"># {{ est.id }}</td>
                         <td class="py-3 px-3 font-medium text-slate-900">{{ est.nombre }}</td>
-                        <td class="py-3 px-3 text-center">
+                        <td class="py-3 px-3 text-center space-x-2">
+                            <button onclick="abrirModalEstudiante('{{ est.id }}', '{{ est.nombre }}')" class="text-amber-600 hover:underline">Editar</button>
                             <a href="/estudiantes/eliminar/{{ est.id }}"
                                 onclick="return confirm('¿Eliminar estudiante?')"
                                 class="text-red-500 hover:underline">Eliminar</a>
@@ -114,14 +114,60 @@
     </div>
 </div>
 
+<div id="modalCurso" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Modificar Curso</h2>
+        <form id="formEditarCurso" action="" method="POST" onsubmit="return validarCurso('edit_nombre_curso')">
+            <div class="mb-4">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre del Curso</label>
+                <input type="text" id="edit_nombre_curso" name="nombre_curso" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="flex justify-end space-x-2 mt-6">
+                <button type="button" onclick="cerrarModal('modalCurso')" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded text-sm">Cancelar</button>
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded text-sm">Actualizar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="modalEstudiante" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Modificar Estudiante</h2>
+        <form id="formEditarEstudiante" action="" method="POST" onsubmit="return validarEstudiante('edit_nombre_estudiante')">
+            <div class="mb-4">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre Completo</label>
+                <input type="text" id="edit_nombre_estudiante" name="nombre_estudiante" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="flex justify-end space-x-2 mt-6">
+                <button type="button" onclick="cerrarModal('modalEstudiante')" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded text-sm">Cancelar</button>
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded text-sm">Actualizar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    function validarCurso() {
-        let curso = document.getElementById('nombre_curso').value.trim();
+    function abrirModalCurso(id, nombre) {
+        document.getElementById('formEditarCurso').action = "/cursos/editar/" + id;
+        document.getElementById('edit_nombre_curso').value = nombre;
+        document.getElementById('modalCurso').classList.remove('hidden');
+    }
+    function abrirModalEstudiante(id, nombre) {
+        document.getElementById('formEditarEstudiante').action = "/estudiantes/editar/" + id;
+        document.getElementById('edit_nombre_estudiante').value = nombre;
+        document.getElementById('modalEstudiante').classList.remove('hidden');
+    }
+     Bark = document.getElementById('modalCurso');
+    function cerrarModal(idModal) {
+        document.getElementById(idModal).classList.add('hidden');
+    }
+    function validarCurso(idInput) {
+        let curso = document.getElementById(idInput).value.trim();
         if (!curso) { alert('El nombre del curso es obligatorio.'); return false; }
         return true;
     }
-    function validarEstudiante() {
-        let est = document.getElementById('nombre_estudiante').value.trim();
+    function validarEstudiante(idInput) {
+        let est = document.getElementById(idInput).value.trim();
         if (!est) { alert('El nombre del estudiante es obligatorio.'); return false; }
         return true;
     }

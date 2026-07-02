@@ -4,39 +4,46 @@
 
 {% block content %}
 <div class="container mx-auto mt-10 p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
+
+    <!-- Formulario para Agregar Profesor -->
     <div class="bg-white p-6 rounded-lg shadow-md h-fit">
         <h2 class="text-xl font-bold mb-4 text-slate-800">Agregar Profesor</h2>
-        
+
         {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="p-3 rounded mb-4 text-sm {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div
+            class="p-3 rounded mb-4 text-sm {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
 
-        <form action="/profesores" method="POST" onsubmit="return validarProfesor()">
+        <form action="/profesores" method="POST" onsubmit="return validarProfesor('nombre', 'usuario', 'password')">
             <div class="mb-4">
                 <label class="block text-slate-700 text-sm font-bold mb-2">Nombre Completo</label>
-                <input type="text" id="nombre" name="nombre" class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
+                <input type="text" id="nombre" name="nombre"
+                    class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
             </div>
             <div class="mb-4">
                 <label class="block text-slate-700 text-sm font-bold mb-2">Usuario</label>
-                <input type="text" id="usuario" name="usuario" class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
+                <input type="text" id="usuario" name="usuario"
+                    class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
             </div>
             <div class="mb-6">
                 <label class="block text-slate-700 text-sm font-bold mb-2">Contraseña</label>
-                <input type="password" id="password" name="password" class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
+                <input type="password" id="password" name="password"
+                    class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
             </div>
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full transition">
+            <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full transition">
                 Guardar Profesor
             </button>
         </form>
     </div>
 
+    <!-- Tabla de Profesores Registrados -->
     <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
         <h2 class="text-xl font-bold mb-4 text-slate-800">Profesores Registrados</h2>
         <div class="overflow-x-auto">
@@ -55,8 +62,11 @@
                         <td class="px-5 py-4">{{ prof.id }}</td>
                         <td class="px-5 py-4 font-medium text-slate-900">{{ prof.nombre }}</td>
                         <td class="px-5 py-4 text-slate-600">{{ prof.usuario }}</td>
-                        <td class="px-5 py-4 text-center">
-                            <a href="/profesores/eliminar/{{ prof.id }}" onclick="return confirm('¿Seguro?')" class="text-red-600 hover:text-red-900 font-semibold">Eliminar</a>
+                        <td class="px-5 py-4 text-center space-x-2">
+                            <button onclick="abrirModal('{{ prof.id }}', '{{ prof.nombre }}', '{{ prof.usuario }}', '{{ prof.password }}')" 
+                                    class="text-amber-600 hover:text-amber-900 font-semibold">Editar</button>
+                            <a href="/profesores/eliminar/{{ prof.id }}" onclick="return confirm('¿Seguro?')"
+                                class="text-red-600 hover:text-red-900 font-semibold">Eliminar</a>
                         </td>
                     </tr>
                     {% endfor %}
@@ -66,11 +76,49 @@
     </div>
 </div>
 
+<!-- Modal flotante para modificar datos -->
+<div id="modalEditar" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Modificar Profesor</h2>
+        <form id="formEditar" action="" method="POST" onsubmit="return validarProfesor('edit_nombre', 'edit_usuario', 'edit_password')">
+            <div class="mb-4">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre Completo</label>
+                <input type="text" id="edit_nombre" name="nombre" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Usuario</label>
+                <input type="text" id="edit_usuario" name="usuario" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="mb-4">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Contraseña</label>
+                <input type="password" id="edit_password" name="password" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="flex justify-end space-x-2 mt-6">
+                <button type="button" onclick="cerrarModal()" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded text-sm transition">Cancelar</button>
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded text-sm transition">Actualizar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    function validarProfesor() {
-        let nombre = document.getElementById('nombre').value.trim();
-        let usuario = document.getElementById('usuario').value.trim();
-        let password = document.getElementById('password').value.trim();
+    function abrirModal(id, nombre, usuario, password) {
+        document.getElementById('formEditar').action = "/profesores/editar/" + id;
+        document.getElementById('edit_nombre').value = nombre;
+        document.getElementById('edit_usuario').value = usuario;
+        document.getElementById('edit_password').value = password;
+        document.getElementById('modalEditar').classList.remove('hidden');
+    }
+
+    box = document.getElementById('modalEditar');
+    function cerrarModal() {
+        box.classList.add('hidden');
+    }
+
+    function validarProfesor(idNombre, idUsuario, idPass) {
+        let nombre = document.getElementById(idNombre).value.trim();
+        let usuario = document.getElementById(idUsuario).value.trim();
+        let password = document.getElementById(idPass).value.trim();
         if (!nombre || !usuario || !password) {
             alert("Todos los campos son obligatorios.");
             return false;

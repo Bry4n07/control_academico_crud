@@ -13,6 +13,7 @@ def get_db_connection():
         database="control_colegio"
     )
 
+# Login
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -21,7 +22,6 @@ def login():
         
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        # Buscar profesor en la BD
         cursor.execute("SELECT * FROM profesores WHERE usuario = %s AND password = %s", (usuario, password))
         user = cursor.fetchone()
         cursor.close()
@@ -37,13 +37,102 @@ def login():
             
     return render_template('login.html')
 
+# Dashboard
 @app.route('/dashboard')
 def dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     return render_template('dashboard.html')
 
-# CRUD Curso y estudiantes
+# CRUD Profedores Vista principal y crear
+@app.route('/profesores', methods=['GET', 'POST'])
+def profesores():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        usuario = request.form['usuario']
+        password = request.form['password']
+        
+        try:
+            cursor.execute("INSERT INTO profesores (nombre, usuario, password) VALUES (%s, %s, %s)", (nombre, usuario, password))
+            conn.commit()
+            flash('Profesor creado exitosamente', 'success')
+        except mysql.connector.Error as err:
+            flash('Error: El usuario ya existe o los datos son inválidos.', 'error')
+            
+        return redirect(url_for('profesores'))
+
+    # Obtener la lista de todos los profesores para la tabla
+    cursor.execute("SELECT * FROM profesores")
+    lista_profesores = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    return render_template('profesores.html', profesores=lista_profesores)
+
+# Modificar profesor
+@app.route('/profesores/editar/<int:id>', methods=['POST'])
+def editar_profesor(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    nombre = request.form['nombre'].strip()
+    usuario = request.form['usuario'].strip()
+    password = request.form['password'].strip()
+    
+    if not nombre or not usuario or not password:
+        flash('Error: No puedes dejar campos vacíos al editar.', 'error')
+        return redirect(url_for('profesores'))
+        
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            UPDATE profesores 
+            SET nombre = %s, usuario = %s, password = %s 
+            WHERE id = %s
+        """, (nombre, usuario, password, id))
+        conn.commit()
+        flash('Profesor actualizado correctamente.', 'success')
+    except mysql.connector.Error as err:
+        flash('Error: El nombre de usuario ya está en uso por otro profesor.', 'error')
+        
+    cursor.close()
+    conn.close()
+    return redirect(url_for('profesores'))
+
+# CRUD De Profesores, Eliminar
+@app.route('/profesores/eliminar/<int:id>')
+def eliminar_profesor(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    # Impedir que el profesor activo se borre a sí mismo
+    if id == session['user_id']:
+        flash('No puedes eliminar al usuario con el que tienes sesión activa.', 'error')
+        return redirect(url_for('profesores'))
+
+    conn = get_db_connection()
+    cursor = conn.connector.cursor() if hasattr(conn, 'connector') else conn.cursor()
+    
+    try:
+        cursor.execute("DELETE FROM profesores WHERE id = %s", (id,))
+        conn.commit()
+        flash('Profesor eliminado correctamente.', 'success')
+    except mysql.connector.Error as err:
+        flash('No se puede eliminar el profesor porque tiene cursos asignados.', 'error')
+        
+    cursor.close()
+    conn.close()
+    return redirect(url_for('profesores'))
+
+# CRUD Cruso y Estudiantes
 @app.route('/cursos_estudiantes', methods=['GET', 'POST'])
 def cursos_estudiantes():
     if 'user_id' not in session:
@@ -55,12 +144,10 @@ def cursos_estudiantes():
     if request.method == 'POST':
         action = request.form.get('action')
         
-        # Logica para crear curso
         if action == 'crear_curso':
             nombre_curso = request.form['nombre_curso']
             profesor_id = request.form['profesor_id']
             
-            # Validación Backend, contar cuántos cursos tiene ya ese profesor
             cursor.execute("SELECT COUNT(*) as total FROM cursos WHERE profesor_id = %s", (profesor_id,))
             conteo = cursor.fetchone()
             
@@ -71,7 +158,6 @@ def cursos_estudiantes():
                 conn.commit()
                 flash('Curso creado y asignado exitosamente', 'success')
                 
-        # Logica para crear Estudiante
         elif action == 'crear_estudiante':
             nombre_estudiante = request.form['nombre_estudiante']
             cursor.execute("INSERT INTO estudiantes (nombre) VALUES (%s)", (nombre_estudiante,))
@@ -80,7 +166,6 @@ def cursos_estudiantes():
             
         return redirect(url_for('cursos_estudiantes'))
 
-    # Obtener datos para renderizar la pantalla
     cursor.execute("SELECT * FROM profesores")
     all_profesores = cursor.fetchall()
     
@@ -98,6 +183,36 @@ def cursos_estudiantes():
     conn.close()
     
     return render_template('cursos_estudiantes.html', profesores=all_profesores, cursos=all_cursos, estudiantes=all_estudiantes)
+
+# Modificar curso
+@app.route('/cursos/editar/<int:id>', methods=['POST'])
+def editar_curso(id):
+    if 'user_id' not in session: return redirect(url_for('login'))
+    nombre = request.form['nombre_curso'].strip()
+    if not nombre: return redirect(url_for('cursos_estudiantes'))
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE cursos SET nombre = %s WHERE id = %s", (nombre, id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    flash('Curso actualizado correctamente.', 'success')
+    return redirect(url_for('cursos_estudiantes'))
+
+# Modificar estudiante
+@app.route('/estudiantes/editar/<int:id>', methods=['POST'])
+def editar_estudiante(id):
+    if 'user_id' not in session: return redirect(url_for('login'))
+    nombre = request.form['nombre_estudiante'].strip()
+    if not nombre: return redirect(url_for('cursos_estudiantes'))
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE estudiantes SET nombre = %s WHERE id = %s", (nombre, id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    flash('Estudiante actualizado correctamente.', 'success')
+    return redirect(url_for('cursos_estudiantes'))
 
 # Eliminar Curso
 @app.route('/cursos/eliminar/<int:id>')
@@ -127,11 +242,6 @@ def eliminar_estudiante(id):
     flash('Estudiante eliminado correctamente', 'success')
     return redirect(url_for('cursos_estudiantes'))
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
-
 # CRUD Calificaciones
 @app.route('/calificaciones', methods=['GET', 'POST'])
 def calificaciones():
@@ -147,7 +257,6 @@ def calificaciones():
         semestre = request.form['semestre']
         nota = request.form['nota']
         
-        # Validar que el estudiante no tenga ya 6 cursos distintos
         cursor.execute("""
             SELECT COUNT(DISTINCT curso_id) as total_cursos 
             FROM calificaciones 
@@ -155,7 +264,6 @@ def calificaciones():
         """, (estudiante_id, curso_id))
         conteo_cursos = cursor.fetchone()
         
-        # Verificar si ya existe una nota para este curso en este semestre
         cursor.execute("""
             SELECT id FROM calificaciones 
             WHERE estudiante_id = %s AND curso_id = %s AND semestre = %s
@@ -165,9 +273,8 @@ def calificaciones():
         if conteo_cursos['total_cursos'] >= 6:
             flash('Error: El estudiante ya alcanzó el límite máximo de 6 cursos asignados.', 'error')
         elif nota_existente:
-            flash('Error: Ya existe una calificación registrada para este estudiante en este curso y semestre.', 'error')
+            flash('Error: Ya existe una calificación registrada para este estudiante en este curso and semestre.', 'error')
         else:
-            # Insertar la calificación si pasa los filtros
             cursor.execute("""
                 INSERT INTO calificaciones (estudiante_id, curso_id, semestre, nota) 
                 VALUES (%s, %s, %s, %s)
@@ -177,14 +284,12 @@ def calificaciones():
             
         return redirect(url_for('calificaciones'))
 
-    # Obtener catálogos para los selects del formulario
     cursor.execute("SELECT * FROM estudiantes")
     all_estudiantes = cursor.fetchall()
     
     cursor.execute("SELECT * FROM cursos")
     all_cursos = cursor.fetchall()
     
-    # Obtener el listado de todas las calificaciones para la tabla
     cursor.execute("""
         SELECT c.id, e.nombre as estudiante_nombre, cr.nombre as curso_nombre, c.semestre, c.nota 
         FROM calificaciones c
@@ -198,8 +303,33 @@ def calificaciones():
     conn.close()
     
     return render_template('calificaciones.html', estudiantes=all_estudiantes, cursos=all_cursos, calificaciones=all_calificaciones)
+# Modificar calificacion
+@app.route('/calificaciones/editar/<int:id>', methods=['POST'])
+def editar_calificacion(id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+        
+    try:
+        nota = int(request.form['nota'])
+    except ValueError:
+        flash('Error: La calificación debe ser un número entero.', 'error')
+        return redirect(url_for('calificaciones'))
+        
+    if nota < 0 or nota > 100:
+        flash('Error: La calificación debe estar entre 0 y 100.', 'error')
+        return redirect(url_for('calificaciones'))
+        
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE calificaciones SET nota = %s WHERE id = %s", (nota, id))
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+    flash('Calificación actualizada correctamente.', 'success')
+    return redirect(url_for('calificaciones'))
 
-# Eliminar Calificacion
+# Eliminar calificacion
 @app.route('/calificaciones/eliminar/<int:id>')
 def eliminar_calificacion(id):
     if 'user_id' not in session:
@@ -214,5 +344,12 @@ def eliminar_calificacion(id):
     
     flash('Registro de calificación eliminado.', 'success')
     return redirect(url_for('calificaciones'))
+
+# --- LOGOUT ---
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)    
+    app.run(debug=True, port=5000)

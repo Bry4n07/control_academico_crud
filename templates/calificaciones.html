@@ -18,7 +18,7 @@
           {% endif %}
         {% endwith %}
 
-        <form action="/calificaciones" method="POST" onsubmit="return validarNotas()">
+        <form action="/calificaciones" method="POST" onsubmit="return validarNotas('nota')">
             <div class="mb-4">
                 <label class="block text-slate-700 text-sm font-semibold mb-1">Seleccionar Estudiante</label>
                 <select name="estudiante_id" class="w-full border rounded p-2 text-sm bg-white focus:outline-none focus:border-blue-500">
@@ -81,7 +81,9 @@
                                 {{ cal.nota }} pts
                             </span>
                         </td>
-                        <td class="py-3 px-4 text-center">
+                        <td class="py-3 px-4 text-center space-x-2">
+                            <button onclick="abrirModalCalificacion('{{ cal.id }}', '{{ cal.estudiante_nombre }}', '{{ cal.curso_nombre }}', '{{ cal.semestre }}', '{{ cal.nota }}')" 
+                                    class="text-amber-600 hover:underline">Editar</button>
                             <a href="/calificaciones/eliminar/{{ cal.id }}" onclick="return confirm('¿Eliminar esta nota?')" class="text-red-500 hover:underline">Eliminar</a>
                         </td>
                     </tr>
@@ -96,9 +98,40 @@
     </div>
 </div>
 
+<div id="modalCalificacion" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
+    <div class="bg-white p-6 rounded-lg shadow-xl w-96">
+        <h2 class="text-xl font-bold mb-2 text-slate-800">Modificar Nota</h2>
+        <p class="text-xs text-slate-500 mb-4"><span id="lbl_estudiante" class="font-semibold"></span> - <span id="lbl_curso" class="font-semibold"></span> (Semestre <span id="lbl_semestre"></span>)</p>
+        
+        <form id="formEditarCalificacion" action="" method="POST" onsubmit="return validarNotas('edit_nota')">
+            <div class="mb-4">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Nueva Nota (0-100)</label>
+                <input type="number" id="edit_nota" name="nota" min="0" max="100" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+            </div>
+            <div class="flex justify-end space-x-2 mt-6">
+                <button type="button" onclick="cerrarModalCalificacion()" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded text-sm">Cancelar</button>
+                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded text-sm">Actualizar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
-    function validarNotas() {
-        let notaInput = document.getElementById('nota').value;
+    function abrirModalCalificacion(id, estudiante, curso, semestre, nota) {
+        document.getElementById('formEditarCalificacion').action = "/calificaciones/editar/" + id;
+        document.getElementById('lbl_estudiante').innerText = estudiante;
+        document.getElementById('lbl_curso').innerText = curso;
+        document.getElementById('lbl_semestre').innerText = semestre;
+        document.getElementById('edit_nota').value = nota;
+        document.getElementById('modalCalificacion').classList.remove('hidden');
+    }
+
+    function cerrarModalCalificacion() {
+        document.getElementById('modalCalificacion').classList.add('hidden');
+    }
+
+    function validarNotas(idInput) {
+        let notaInput = document.getElementById(idInput).value;
         if (notaInput === "") {
             alert("Validación JS: Debes ingresar una nota.");
             return false;
