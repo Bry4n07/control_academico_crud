@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Tarjeta de Calificaciones - Control Académico{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-10 p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <div class="bg-white p-6 rounded-lg shadow-md h-fit border-t-4 border-amber-500">
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Tarjeta de Calificaciones</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="p-3 rounded mb-4 text-sm {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form action="/calificaciones" method="POST" onsubmit="return validarNotas()">
+            <div class="mb-4">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Seleccionar Estudiante</label>
+                <select name="estudiante_id" class="w-full border rounded p-2 text-sm bg-white focus:outline-none focus:border-blue-500">
+                    {% for est in estudiantes %}
+                        <option value="{{ est.id }}">{{ est.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Seleccionar Curso</label>
+                <select name="curso_id" class="w-full border rounded p-2 text-sm bg-white focus:outline-none focus:border-blue-500">
+                    {% for curso in cursos %}
+                        <option value="{{ curso.id }}">{{ curso.nombre }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-4 grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Semestre</label>
+                    <select name="semestre" class="w-full border rounded p-2 text-sm bg-white focus:outline-none focus:border-blue-500">
+                        <option value="1">1er Semestre</option>
+                        <option value="2">2do Semestre</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Nota (0-100)</label>
+                    <input type="number" id="nota" name="nota" min="0" max="100" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500" placeholder="Ej. 85">
+                </div>
+            </div>
+
+            <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded w-full text-sm transition">
+                Registrar Calificación
+            </button>
+        </form>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Historial de Calificaciones</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead>
+                    <tr class="bg-slate-200 text-slate-700 text-left uppercase text-xs font-bold border-b">
+                        <th class="py-3 px-4">Estudiante</th>
+                        <th class="py-3 px-4">Curso</th>
+                        <th class="py-3 px-4 text-center">Semestre</th>
+                        <th class="py-3 px-4 text-center">Nota</th>
+                        <th class="py-3 px-4 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cal in calificaciones %}
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="py-3 px-4 font-medium text-slate-900">{{ cal.estudiante_nombre }}</td>
+                        <td class="py-3 px-4 text-slate-600">{{ cal.curso_nombre }}</td>
+                        <td class="py-3 px-4 text-center">Semestre {{ cal.semestre }}</td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="px-2 py-1 rounded font-bold {% if cal.nota >= 61 %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                                {{ cal.nota }} pts
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <a href="/calificaciones/eliminar/{{ cal.id }}" onclick="return confirm('¿Eliminar esta nota?')" class="text-red-500 hover:underline">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="py-4 text-center text-slate-500">No hay calificaciones registradas aún.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function validarNotas() {
+        let notaInput = document.getElementById('nota').value;
+        if (notaInput === "") {
+            alert("Validación JS: Debes ingresar una nota.");
+            return false;
+        }
+        let nota = parseInt(notaInput);
+        if (nota < 0 || nota > 100) {
+            alert("Validación JS: La nota debe estar entre 0 y 100 puntos.");
+            return false;
+        }
+        return true;
+    }
+</script>
+{% endblock %}

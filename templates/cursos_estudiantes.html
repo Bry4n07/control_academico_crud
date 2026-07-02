@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Cursos y Estudiantes - Control Académico{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-10 p-4">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div
+        class="p-4 rounded-lg mb-6 shadow text-sm {% if category == 'success' %}bg-green-100 text-green-800 border-l-4 border-green-500{% else %}bg-red-100 text-red-800 border-l-4 border-red-500{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4 text-slate-800 border-b pb-2">Gestión de Cursos</h2>
+
+            <form action="/cursos_estudiantes" method="POST"
+                class="mb-6 grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border" onsubmit="return validarCurso()">
+                <input type="hidden" name="action" value="crear_curso">
+                <div>
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre del Curso</label>
+                    <input type="text" id="nombre_curso" name="nombre_curso"
+                        class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Asignar Profesor</label>
+                    <select id="profesor_id" name="profesor_id"
+                        class="w-full border rounded p-2 text-sm bg-white focus:outline-none focus:border-blue-500">
+                        {% for prof in profesores %}
+                        <option value="{{ prof.id }}">{{ prof.nombre }} ({{ prof.usuario }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit"
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded text-sm transition">
+                    Crear Curso
+                </button>
+            </form>
+
+            <table class="min-w-full text-sm">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-700 text-left uppercase text-xs font-bold border-b">
+                        <th class="py-2 px-3">Curso</th>
+                        <th class="py-2 px-3">Profesor</th>
+                        <th class="py-2 px-3 text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for curso in cursos %}
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="py-3 px-3 font-medium text-slate-900">{{ curso.curso_nombre }}</td>
+                        <td class="py-3 px-3 text-slate-600">{{ curso.profesor_nombre or 'Sin profesor asignado' }}</td>
+                        <td class="py-3 px-3 text-center">
+                            <a href="/cursos/eliminar/{{ curso.id }}" onclick="return confirm('¿Eliminar curso?')"
+                                class="text-red-500 hover:underline">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-xl font-bold mb-4 text-slate-800 border-b pb-2">Gestión de Estudiantes</h2>
+
+            <form action="/cursos_estudiantes" method="POST"
+                class="mb-6 grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border"
+                onsubmit="return validarEstudiante()">
+                <input type="hidden" name="action" value="crear_student">
+                <input type="hidden" name="action" value="crear_estudiante">
+                <div>
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre Completo del Alumno</label>
+                    <input type="text" id="nombre_estudiante" name="nombre_estudiante"
+                        class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+                </div>
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm transition">
+                    Registrar Estudiante
+                </button>
+            </form>
+
+            <table class="min-w-full text-sm">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-700 text-left uppercase text-xs font-bold border-b">
+                        <th class="py-2 px-3">Carnet / ID</th>
+                        <th class="py-2 px-3">Nombre Completo</th>
+                        <th class="py-2 px-3 text-center">Acción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% endfor %}
+                    {% for est in estudiantes %}
+                    <tr class="border-b hover:bg-slate-50">
+                        <td class="py-3 px-3 text-slate-500"># {{ est.id }}</td>
+                        <td class="py-3 px-3 font-medium text-slate-900">{{ est.nombre }}</td>
+                        <td class="py-3 px-3 text-center">
+                            <a href="/estudiantes/eliminar/{{ est.id }}"
+                                onclick="return confirm('¿Eliminar estudiante?')"
+                                class="text-red-500 hover:underline">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    function validarCurso() {
+        let curso = document.getElementById('nombre_curso').value.trim();
+        if (!curso) { alert('El nombre del curso es obligatorio.'); return false; }
+        return true;
+    }
+    function validarEstudiante() {
+        let est = document.getElementById('nombre_estudiante').value.trim();
+        if (!est) { alert('El nombre del estudiante es obligatorio.'); return false; }
+        return true;
+    }
+</script>
+{% endblock %}

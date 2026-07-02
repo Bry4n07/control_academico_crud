@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Control Académico{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-100">
+
+    {% if session.get('user_id') %}
+    <nav class="bg-blue-600 p-4 text-white shadow-md flex justify-between items-center">
+        <h1 class="text-xl font-bold"><a href="/dashboard">Control Académico</a></h1>
+        <div>
+            <span class="mr-4 text-sm font-medium">Docente: {{ session.get('user_name') }}</span>
+            <a href="/logout" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm transition">Cerrar Sesión</a>
+        </div>
+    </nav>
+    {% endif %}
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>

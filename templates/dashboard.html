@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Control Académico{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-10 p-4">
+    <h2 class="text-3xl font-bold mb-8 text-slate-800">Panel de Control Principal</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500 hover:shadow-lg transition">
+            <h3 class="text-xl font-bold mb-2 text-slate-800">Profesores</h3>
+            <p class="text-slate-600 mb-6 text-sm">Crear y eliminar cuentas de catedráticos del sistema escolar.</p>
+            <a href="/profesores" class="inline-block bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded transition">
+                Administrar Profesores &rarr;
+            </a>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-emerald-500 hover:shadow-lg transition">
+            <h3 class="text-xl font-bold mb-2 text-slate-800">Cursos y Estudiantes</h3>
+            <p class="text-slate-600 mb-6 text-sm">Gestionar asignaturas y alumnos respetando los límites reglamentarios.</p>
+            <a href="/cursos_estudiantes" class="inline-block bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2 rounded transition">
+                Ir a Cursos y Alumnos &rarr;
+            </a>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-amber-500 hover:shadow-lg transition">
+            <h3 class="text-xl font-bold mb-2 text-slate-800">Tarjeta de Calificaciones</h3>
+            <p class="text-slate-600 mb-6 text-sm">Ingreso de notas semestrales por estudiante y materia asignada.</p>
+            <a href="/calificaciones" class="inline-block bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded transition">
+                Registrar Notas &rarr;
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
