@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, session
 import mysql.connector
 
 app = Flask(__name__)
@@ -13,8 +13,15 @@ def get_db_connection():
         database="control_colegio"
     )
 
+@app.route('/')
+def index():
+    #Si ya Inicio sesión, lo mandamos al darshboard directamente
+    if 'user_id' in session:
+        return redirect(url_for('dashboard'))
+    return render_template('colegio.html')
+
 # Login
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         usuario = request.form['usuario']
@@ -350,6 +357,40 @@ def eliminar_calificacion(id):
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
+#Api para obtener los estudiantes en JSON
+@app.route('/api/estudiantes', methods=['GET'])
+def api_estudiantes():
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+        
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT id, nombre FROM estudiantes")
+    estudiantes = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    return jsonify(estudiantes)
+
+# API para obtener todos los cursos en JSON
+@app.route('/api/cursos', methods=['GET'])
+def api_cursos():
+    if 'user_id' not in session:
+        return jsonify({'error': 'No autorizado'}), 401
+        
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("""
+        SELECT c.id, c.nombre as curso, p.nombre as profesor 
+        FROM cursos c 
+        LEFT JOIN profesores p ON c.profesor_id = p.id
+    """)
+    cursos = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    
+    return jsonify(cursos)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

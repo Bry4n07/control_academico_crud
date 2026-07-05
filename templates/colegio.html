@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - Colegio de la Asunción{% endblock %}
+
+{% block content %}
+<nav class="bg-white shadow-md fixed w-full top-0 left-0 z-50 px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center space-x-2">
+        <span class="text-2xl font-bold text-blue-600">🏫 Colegio Asunción</span>
+    </div>
+    <div class="space-x-6 text-slate-600 font-medium text-sm hidden md:flex">
+        <a href="#inicio" class="hover:text-blue-600 transition">Inicio</a>
+        <a href="#nosotros" class="hover:text-blue-600 transition">Nosotros</a>
+        <a href="#profesores" class="hover:text-blue-600 transition">Profesores</a>
+        <a href="#Galeria" class="hover:text-blue-600 transition">Galería</a>
+    </div>
+    <div>
+        <a href="/login"
+            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition shadow">
+            Ingresar al Sistema
+        </a>
+    </div>
+</nav>
+
+<section id="inicio" class="pt-32 pb-20 bg-gradient-to-r from-blue-50 to-indigo-50 px-6">
+    <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+        <div class="max-w-xl">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 leading-tight mb-4">
+                Educación Integral para el Éxito del Mañana
+            </h1>
+            <p class="text-slate-600 mb-6 leading-relaxed">
+                Formamos líderes con valores sólidos, excelencia académica y las herramientas tecnológicas necesarias
+                para afrontar los retos del futuro del país.
+            </p>
+            <a href="#nosotros"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-md inline-block">
+                Conoce Más Sobre Nosotros
+            </a>
+        </div>
+        <div class="w-full md:w-1/2">
+            <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80"
+                alt="Colegio" class="rounded-xl shadow-lg w-full object-cover h-80">
+        </div>
+    </div>
+</section>
+
+<section id="nosotros" class="py-20 bg-white px-6">
+    <div class="container mx-auto max-w-5xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-slate-800">Nuestra Identidad</h2>
+            <p class="text-slate-500 mt-2">Comprometidos con el desarrollo estudiantil.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div class="bg-slate-50 p-8 rounded-xl border border-slate-100 shadow-sm">
+                <div class="text-3xl mb-4">🎯</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Misión</h3>
+                <p class="text-slate-600 leading-relaxed text-sm">
+                    Brindar una educación de la más alta calidad, promoviendo el pensamiento crítico, la innovación
+                    tecnológica y los valores morales para formar ciudadanos responsables y comprometidos con el
+                    progreso social.
+                </p>
+            </div>
+            <div class="bg-slate-50 p-8 rounded-xl border border-slate-100 shadow-sm">
+                <div class="text-3xl mb-4">👁️‍🗨️</div>
+                <h3 class="text-xl font-bold text-slate-800 mb-3">Visión</h3>
+                <p class="text-slate-600 leading-relaxed text-sm">
+                    Ser reconocidos a nivel nacional como la institución educativa líder en excelencia académica y
+                    tecnológica, egresando profesionales capaces de transformar positivamente su entorno global.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="profesores" class="py-20 bg-slate-50 px-6">
+    <div class="container mx-auto max-w-5xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-slate-800">Nuestro Cuerpo Docente</h2>
+            <p class="text-slate-500 mt-2">Profesionales capacitados y dedicados a la enseñanza.</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm text-center border">
+                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80"
+                    alt="Profesor" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 shadow">
+                <h4 class="font-bold text-slate-800">Inga. María López</h4>
+                <p class="text-xs text-blue-600 font-semibold uppercase mt-1">Área de Ciencias</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm text-center border">
+                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80"
+                    alt="Profesor" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 shadow">
+                <h4 class="font-bold text-slate-800">Lic. Carlos Estrada</h4>
+                <p class="text-xs text-blue-600 font-semibold uppercase mt-1">Área de Historia</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm text-center border">
+                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80"
+                    alt="Profesor" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 shadow">
+                <h4 class="font-bold text-slate-800">Profra. Ana Martínez</h4>
+                <p class="text-xs text-blue-600 font-semibold uppercase mt-1">Área de Literatura</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section id="Galeria" class="py-20 bg-white px-6">
+    <div class="container mx-auto max-w-5xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-slate-800">Vida Estudiantil</h2>
+            <p class="text-slate-500 mt-2">Conoce nuestras instalaciones y actividades en video.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+            <div class="aspect-video bg-slate-200 rounded-xl overflow-hidden shadow-md">
+                <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ"
+                    title="Video Institucional" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="space-y-4">
+                <h3 class="text-2xl font-bold text-slate-800">Instalaciones de Primer Nivel</h3>
+                <p class="text-slate-600 text-sm leading-relaxed">
+                    Contamos con laboratorios de computación equipados, canchas deportivas, áreas recreativas seguras y
+                    salones climatizados para garantizar el confort de nuestra comunidad escolar durante todo el ciclo
+                    académico.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="bg-slate-800 text-slate-400 py-8 px-6 text-center text-sm border-t border-slate-700">
+    <p>&copy; 2026 Colegio de la Asunción. Todos los derechos reservados.</p>
+</footer>
+{% endblock %}
