@@ -5,7 +5,6 @@
 {% block content %}
 <div class="container mx-auto mt-10 p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-    <!-- Formulario para Agregar Profesor -->
     <div class="bg-white p-6 rounded-lg shadow-md h-fit">
         <h2 class="text-xl font-bold mb-4 text-slate-800">Agregar Profesor</h2>
 
@@ -20,7 +19,7 @@
         {% endif %}
         {% endwith %}
 
-        <form action="/profesores" method="POST" onsubmit="return validarProfesor('nombre', 'usuario', 'password')">
+        <form id="formProfesor" onsubmit="return guardarProfesorAsincrono(event)">
             <div class="mb-4">
                 <label class="block text-slate-700 text-sm font-bold mb-2">Nombre Completo</label>
                 <input type="text" id="nombre" name="nombre"
@@ -43,7 +42,6 @@
         </form>
     </div>
 
-    <!-- Tabla de Profesores Registrados -->
     <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
         <h2 class="text-xl font-bold mb-4 text-slate-800">Profesores Registrados</h2>
         <div class="overflow-x-auto">
@@ -76,7 +74,6 @@
     </div>
 </div>
 
-<!-- Modal flotante para modificar datos -->
 <div id="modalEditar" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white p-6 rounded-lg shadow-xl w-96">
         <h2 class="text-xl font-bold mb-4 text-slate-800">Modificar Profesor</h2>
@@ -110,9 +107,8 @@
         document.getElementById('modalEditar').classList.remove('hidden');
     }
 
-    box = document.getElementById('modalEditar');
     function cerrarModal() {
-        box.classList.add('hidden');
+        document.getElementById('modalEditar').classList.add('hidden');
     }
 
     function validarProfesor(idNombre, idUsuario, idPass) {
@@ -124,6 +120,42 @@
             return false;
         }
         return true;
+    }
+
+    // procesar el guardado de forma asincrona consumiendo la api rest
+    async function guardarProfesorAsincrono(event) {
+        if (event) event.preventDefault();
+
+        let nombre = document.getElementById('nombre').value.trim();
+        let usuario = document.getElementById('usuario').value.trim();
+        let password = document.getElementById('password').value.trim();
+
+        if (!nombre || !usuario || !password) {
+            alert("Todos los campos son obligatorios.");
+            return false;
+        }
+
+        try {
+            let response = await fetch('/api/profesores/crear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre: nombre, usuario: usuario, password: password })
+            });
+
+            let result = await response.json();
+
+            if (!response.ok) {
+                alert("Error desde la API: " + result.error);
+                return false;
+            }
+
+            alert(result.success);
+            window.location.reload();
+
+        } catch (error) {
+            alert("error de red al intentar conectar con la api rest.");
+        }
+        return false;
     }
 </script>
 {% endblock %}

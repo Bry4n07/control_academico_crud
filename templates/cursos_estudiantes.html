@@ -1,54 +1,55 @@
 {% extends 'base.html' %}
 
-{% block title %}Cursos y Estudiantes - Control Académico{% endblock %}
+{% block title %}Control Académico - Cursos e Inscripciones{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-10 p-4">
+<div class="container mx-auto mt-10 p-4 space-y-8">
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div
-        class="p-4 rounded-lg mb-6 shadow text-sm {% if category == 'success' %}bg-green-100 text-green-800 border-l-4 border-green-500{% else %}bg-red-100 text-red-800 border-l-4 border-red-500{% endif %}">
-        {{ message }}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-100 p-4 rounded-lg border">
+        <div class="bg-white p-4 rounded shadow-sm">
+            <h3 class="text-sm font-bold text-slate-700 mb-2">Crear Nueva Materia Institucional</h3>
+            <div class="flex space-x-2">
+                <input type="text" id="new_materia" placeholder="Ej. Literatura" class="border rounded p-2 text-sm w-full focus:outline-none bg-white">
+                <button onclick="crearMateriaGlobal()" class="bg-slate-800 hover:bg-slate-950 text-white font-bold px-4 rounded text-xs transition">Registrar</button>
+            </div>
+        </div>
+        <div class="bg-white p-4 rounded shadow-sm">
+            <h3 class="text-sm font-bold text-slate-700 mb-2">Crear Nuevo Grado / Sección</h3>
+            <div class="flex space-x-2">
+                <input type="text" id="new_grado" placeholder="Ej. Tercero Básico" class="border rounded p-2 text-sm w-full focus:outline-none bg-white">
+                <input type="text" id="new_seccion" placeholder="A" class="border rounded p-2 text-sm w-20 text-center focus:outline-none bg-white">
+                <button onclick="crearGradoGlobal()" class="bg-slate-800 hover:bg-slate-950 text-white font-bold px-4 rounded text-xs transition">Registrar</button>
+            </div>
+        </div>
     </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
 
-        <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4 text-slate-800 border-b pb-2">Gestión de Cursos</h2>
-
-            <form action="/cursos_estudiantes" method="POST"
-                class="mb-6 grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border" onsubmit="return validarCurso('nombre_curso')">
-                <input type="hidden" name="action" value="crear_curso">
+        <div class="bg-white p-6 rounded-lg shadow-md h-fit">
+            <h2 class="text-xl font-bold mb-4 text-slate-800 border-b pb-2">Asignación de mis Cursos</h2>
+            <form id="formCurso" onsubmit="return validarCurso(event)" class="mb-6 grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border">
                 <div>
-                    <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre del Curso</label>
-                    <input type="text" id="nombre_curso" name="nombre_curso"
-                        class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-slate-700 text-sm font-semibold mb-1">Asignar Profesor</label>
-                    <select id="profesor_id" name="profesor_id"
-                        class="w-full border rounded p-2 text-sm bg-white focus:outline-none focus:border-blue-500">
-                        {% for prof in profesores %}
-                        <option value="{{ prof.id }}">{{ prof.nombre }}</option>
-                        {% endfor %}
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Materia</label>
+                    <select id="materia_id" class="w-full border rounded p-2 text-sm bg-white focus:outline-none">
+                        <option value="">-- Elige una materia --</option>
+                        {% for mat in materias %} <option value="{{ mat.id }}">{{ mat.nombre_materia }}</option> {% endfor %}
                     </select>
                 </div>
-                <button type="submit"
-                    class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded text-sm transition">
-                    Crear Curso
-                </button>
+                <div>
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Grado Escolar</label>
+                    <select id="grado_id" class="w-full border rounded p-2 text-sm bg-white focus:outline-none">
+                        <option value="">-- Elige un salón --</option>
+                        {% for g in grados %} <option value="{{ g.id }}">{{ g.nombre_grado }} (Sección {{ g.seccion }})</option> {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded text-sm transition">Vincular Materia</button>
             </form>
 
             <table class="min-w-full text-sm">
                 <thead>
                     <tr class="bg-slate-100 text-slate-700 text-left uppercase text-xs font-bold border-b">
                         <th class="py-2 px-3">Curso</th>
-                        <th class="py-2 px-3">Profesor</th>
+                        <th class="py-2 px-3">Salón</th>
                         <th class="py-2 px-3 text-center">Acción</th>
                     </tr>
                 </thead>
@@ -56,12 +57,12 @@
                     {% for curso in cursos %}
                     <tr class="border-b hover:bg-slate-50">
                         <td class="py-3 px-3 font-medium text-slate-900">{{ curso.curso_nombre }}</td>
-                        <td class="py-3 px-3 text-slate-600">{{ curso.profesor_nombre or 'Sin profesor asignado' }}</td>
-                        <td class="py-3 px-3 text-center space-x-2">
-                            <button onclick="abrirModalCurso('{{ curso.id }}', '{{ curso.curso_nombre }}')" class="text-amber-600 hover:underline">Editar</button>
-                            <a href="/cursos/eliminar/{{ curso.id }}" onclick="return confirm('¿Eliminar curso?')"
-                                class="text-red-500 hover:underline">Eliminar</a>
-                        </td>
+                        <td class="py-3 px-3 text-slate-600">{{ curso.nombre_grado }} - {{ curso.seccion }}</td>
+                        <td class="py-3 px-3 text-center"><a href="/cursos/eliminar/{{ curso.id }}" class="text-red-500 hover:underline text-xs">Eliminar</a></td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="py-4 text-center text-slate-400">No tienes cursos asignados (Máximo 2).</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -69,107 +70,154 @@
         </div>
 
         <div class="bg-white p-6 rounded-lg shadow-md">
-            <h2 class="text-xl font-bold mb-4 text-slate-800 border-b pb-2">Gestión de Estudiantes</h2>
-
-            <form action="/cursos_estudiantes" method="POST"
-                class="mb-6 grid grid-cols-1 gap-4 bg-slate-50 p-4 rounded border"
-                onsubmit="return validarEstudiante('nombre_estudiante')">
-                <input type="hidden" name="action" value="crear_estudiante">
+            <h2 class="text-xl font-bold mb-4 text-slate-800 border-b pb-2">Matrícula de Estudiantes</h2>
+            <form id="formEstudiante" onsubmit="return guardarEstudianteAsincrono(event)" class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4 bg-slate-50 p-4 rounded border">
                 <div>
-                    <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre Completo del Alumno</label>
-                    <input type="text" id="nombre_estudiante" name="nombre_estudiante"
-                        class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Carnet (Vacío = Auto-generar)</label>
+                    <input type="text" id="est_carnet" placeholder="Opcional" class="w-full border rounded p-2 text-sm focus:outline-none bg-white">
                 </div>
-                <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm transition">
-                    Registrar Estudiante
-                </button>
+                <div>
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre Completo</label>
+                    <input type="text" id="est_nombre" class="w-full border rounded p-2 text-sm focus:outline-none bg-white">
+                </div>
+                <div>
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Correo (Opcional)</label>
+                    <input type="email" id="est_correo" class="w-full border rounded p-2 text-sm focus:outline-none bg-white">
+                </div>
+                <div>
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Teléfono (Opcional)</label>
+                    <input type="text" id="est_telefono" class="w-full border rounded p-2 text-sm focus:outline-none bg-white">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-slate-700 text-sm font-semibold mb-1">Grado / Asignación</label>
+                    <select id="est_grado_id" class="w-full border rounded p-2 text-sm bg-white focus:outline-none">
+                        <option value="">-- Asignar Salón --</option>
+                        {% for g in grados %} <option value="{{ g.id }}">{{ g.nombre_grado }} - {{ g.seccion }}</option> {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="md:col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded text-sm transition">Matricular Alumno</button>
             </form>
 
-            <table class="min-w-full text-sm">
+            <div class="mb-4">
+                <input type="text" id="buscador" onkeyup="filtrarTablaAlumnos()" placeholder="Escribe para buscar alumno por nombre o carnet..." class="w-full border rounded p-2 text-xs focus:outline-none bg-slate-50">
+            </div>
+
+            <table id="tablaAlumnos" class="min-w-full text-sm">
                 <thead>
                     <tr class="bg-slate-100 text-slate-700 text-left uppercase text-xs font-bold border-b">
-                        <th class="py-2 px-3">Carnet / ID</th>
-                        <th class="py-2 px-3">Nombre Completo</th>
-                        <th class="py-2 px-3 text-center">Acción</th>
+                        <th class="py-2 px-3">Carnet</th>
+                        <th class="py-2 px-3">Estudiante</th>
+                        <th class="py-2 px-3 text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for est in estudiantes %}
                     <tr class="border-b hover:bg-slate-50">
-                        <td class="py-3 px-3 text-slate-500"># {{ est.id }}</td>
-                        <td class="py-3 px-3 font-medium text-slate-900">{{ est.nombre }}</td>
-                        <td class="py-3 px-3 text-center space-x-2">
-                            <button onclick="abrirModalEstudiante('{{ est.id }}', '{{ est.nombre }}')" class="text-amber-600 hover:underline">Editar</button>
-                            <a href="/estudiantes/eliminar/{{ est.id }}"
-                                onclick="return confirm('¿Eliminar estudiante?')"
-                                class="text-red-500 hover:underline">Eliminar</a>
+                        <td class="py-3 px-3 font-mono text-xs text-slate-600 font-bold">{{ est.carnet }}</td>
+                        <td class="py-3 px-3">
+                            <div class="font-medium text-slate-900">{{ est.nombre }}</div>
+                            <span class="text-[10px] bg-blue-50 text-blue-700 px-1 font-bold rounded">{{ est.nombre_grado }} ({{ est.seccion }})</span>
+                        </td>
+                        <td class="py-3 px-3 text-center space-x-1">
+                            <button onclick="abrirModalStudent('{{ est.id }}', '{{ est.nombre }}', '{{ est.correo }}', '{{ est.telefono }}', '{{ est.grado_id }}')" class="text-amber-600 hover:underline text-xs">Editar</button>
+                            <a href="/estudiantes/eliminar/{{ est.id }}" class="text-red-500 hover:underline text-xs">Eliminar</a>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-
-    </div>
-</div>
-
-<div id="modalCurso" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-xl w-96">
-        <h2 class="text-xl font-bold mb-4 text-slate-800">Modificar Curso</h2>
-        <form id="formEditarCurso" action="" method="POST" onsubmit="return validarCurso('edit_nombre_curso')">
-            <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre del Curso</label>
-                <input type="text" id="edit_nombre_curso" name="nombre_curso" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
-            </div>
-            <div class="flex justify-end space-x-2 mt-6">
-                <button type="button" onclick="cerrarModal('modalCurso')" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded text-sm">Cancelar</button>
-                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded text-sm">Actualizar</button>
-            </div>
-        </form>
     </div>
 </div>
 
 <div id="modalEstudiante" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white p-6 rounded-lg shadow-xl w-96">
-        <h2 class="text-xl font-bold mb-4 text-slate-800">Modificar Estudiante</h2>
-        <form id="formEditarEstudiante" action="" method="POST" onsubmit="return validarEstudiante('edit_nombre_estudiante')">
-            <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre Completo</label>
-                <input type="text" id="edit_nombre_estudiante" name="nombre_estudiante" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Modificar Ficha Alumno</h2>
+        <form id="formEditarEstudiante" action="" method="POST">
+            <div class="space-y-3 text-sm">
+                <div>
+                    <label class="block font-semibold text-slate-600">Nombre</label>
+                    <input type="text" id="edit_nombre" name="nombre_estudiante" class="w-full border rounded p-2 focus:outline-none bg-white">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600">Correo</label>
+                    <input type="email" id="edit_correo" name="correo_estudiante" class="w-full border rounded p-2 focus:outline-none bg-white">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600">Teléfono</label>
+                    <input type="text" id="edit_telefono" name="telefono_estudiante" class="w-full border rounded p-2 focus:outline-none bg-white">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-600">Re-asignar Grado</label>
+                    <select id="edit_grado_id" name="grado_id" class="w-full border rounded p-2 bg-white focus:outline-none">
+                        {% for g in grados %} <option value="{{ g.id }}">{{ g.nombre_grado }} - {{ g.seccion }}</option> {% endfor %}
+                    </select>
+                </div>
             </div>
             <div class="flex justify-end space-x-2 mt-6">
-                <button type="button" onclick="cerrarModal('modalEstudiante')" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded text-sm">Cancelar</button>
-                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded text-sm">Actualizar</button>
+                <button type="button" onclick="document.getElementById('modalEstudiante').classList.add('hidden')" class="bg-slate-300 px-4 py-2 rounded text-xs font-bold">Cancelar</button>
+                <button type="submit" class="bg-amber-500 text-white px-4 py-2 rounded text-xs font-bold shadow">Actualizar</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    function abrirModalCurso(id, nombre) {
-        document.getElementById('formEditarCurso').action = "/cursos/editar/" + id;
-        document.getElementById('edit_nombre_curso').value = nombre;
-        document.getElementById('modalCurso').classList.remove('hidden');
-    }
-    function abrirModalEstudiante(id, nombre) {
+    function abrirModalStudent(id, nombre, correo, telefono, gradoId) {
         document.getElementById('formEditarEstudiante').action = "/estudiantes/editar/" + id;
-        document.getElementById('edit_nombre_estudiante').value = nombre;
+        document.getElementById('edit_nombre').value = nombre;
+        document.getElementById('edit_correo').value = (correo === 'Sin Correo') ? '' : correo;
+        document.getElementById('edit_telefono').value = telefono ? telefono : '';
+        document.getElementById('edit_grado_id').value = gradoId;
         document.getElementById('modalEstudiante').classList.remove('hidden');
     }
-     Bark = document.getElementById('modalCurso');
-    function cerrarModal(idModal) {
-        document.getElementById(idModal).classList.add('hidden');
+
+    function filtrarTablaAlumnos() {
+        let input = document.getElementById("buscador").value.toLowerCase();
+        let rows = document.querySelectorAll("#tablaAlumnos tbody tr");
+        rows.forEach(row => {
+            let txt = row.innerText.toLowerCase();
+            row.style.display = txt.includes(input) ? "" : "none";
+        });
     }
-    function validarCurso(idInput) {
-        let curso = document.getElementById(idInput).value.trim();
-        if (!curso) { alert('El nombre del curso es obligatorio.'); return false; }
-        return true;
+
+    async function crearMateriaGlobal() {
+        let nom = document.getElementById('new_materia').value.trim();
+        if(!nom) return alert('Por favor ingresa el nombre de la materia.');
+        let res = await fetch('/api/materias/crear', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({nombre_materia: nom}) });
+        let data = await res.json(); alert(data.success || data.error); if(res.ok) window.location.reload();
     }
-    function validarEstudiante(idInput) {
-        let est = document.getElementById(idInput).value.trim();
-        if (!est) { alert('El nombre del estudiante es obligatorio.'); return false; }
-        return true;
+
+    async function crearGradoGlobal() {
+        let nom = document.getElementById('new_grado').value.trim();
+        let sec = document.getElementById('new_seccion').value.trim();
+        if(!nom || !sec) return alert('Por favor completa el grado y la sección.');
+        let res = await fetch('/api/grados/crear', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({nombre_grado: nom, seccion: sec}) });
+        let data = await res.json(); alert(data.success || data.error); if(res.ok) window.location.reload();
+    }
+
+    async function validarCurso(event) {
+        if(event) event.preventDefault();
+        let mat = document.getElementById('materia_id').value;
+        let gra = document.getElementById('grado_id').value;
+        if(!mat || !gra) return alert('Selecciona una materia y un grado escolar.');
+        let res = await fetch('/api/cursos/crear', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({materia_id:parseInt(mat), grado_id:parseInt(gra)}) });
+        let r = await res.json(); alert(r.success || r.error); if(res.ok) window.location.reload();
+    }
+
+    async function guardarEstudianteAsincrono(event) {
+        if(event) event.preventDefault();
+        let nom = document.getElementById('est_nombre').value.trim();
+        let gra = document.getElementById('est_grado_id').value;
+        if(!nom || !gra) return alert('El nombre completo y el grado son obligatorios.');
+        let res = await fetch('/api/estudiantes/crear', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
+            carnet: document.getElementById('est_carnet').value.trim(),
+            nombre: nom, 
+            correo: document.getElementById('est_correo').value.trim(),
+            telefono: document.getElementById('est_telefono').value.trim(),
+            grado_id: parseInt(gra)
+        }) });
+        let r = await res.json(); alert(r.success || r.error); if(res.ok) window.location.reload();
     }
 </script>
 {% endblock %}

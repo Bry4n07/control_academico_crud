@@ -6,48 +6,37 @@
 <div class="container mx-auto mt-10 p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <div class="bg-white p-6 rounded-lg shadow-md h-fit border-t-4 border-amber-500">
-        <h2 class="text-xl font-bold mb-4 text-slate-800">Tarjeta de Calificaciones</h2>
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Asentar Calificaciones</h2>
         
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="p-3 rounded mb-4 text-sm {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
-
-        <form action="/calificaciones" method="POST" onsubmit="return validarNotas('nota')">
+        <form id="formCalificacion" onsubmit="return guardarCalificacionAsincrona(event)">
             <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-semibold mb-1">Seleccionar Estudiante</label>
-                <select name="estudiante_id" class="w-full border rounded p-2 text-sm bg-white focus:outline-none focus:border-blue-500">
-                    {% for est in estudiantes %}
-                        <option value="{{ est.id }}">{{ est.nombre }}</option>
+                <label class="block text-slate-700 text-sm font-semibold mb-1">1. Tu Curso / Salón Asignado</label>
+                <select id="asignacion_id" class="w-full border rounded p-2 text-sm bg-white focus:outline-none">
+                    <option value="">-- Selecciona una asignación --</option>
+                    {% for asig in asignaciones %}
+                        <option value="{{ asig.asignacion_id }}">{{ asig.nombre_materia }} ({{ asig.nombre_grado }} {{ asig.seccion }})</option>
                     {% endfor %}
                 </select>
             </div>
 
             <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-semibold mb-1">Seleccionar Curso</label>
-                <select name="curso_id" class="w-full border rounded p-2 text-sm bg-white focus:outline-none focus:border-blue-500">
-                    {% for curso in cursos %}
-                        <option value="{{ curso.id }}">{{ curso.nombre }}</option>
-                    {% endfor %}
+                <label class="block text-slate-700 text-sm font-semibold mb-1">2. Estudiante (Filtrado Automático)</label>
+                <select id="estudiante_id" class="w-full border rounded p-2 text-sm bg-white focus:outline-none" disabled>
+                    <option value="">-- Primero selecciona el curso --</option>
                 </select>
             </div>
 
             <div class="mb-4 grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-slate-700 text-sm font-semibold mb-1">Semestre</label>
-                    <select name="semestre" class="w-full border rounded p-2 text-sm bg-white focus:outline-none focus:border-blue-500">
+                    <select id="semestre" class="w-full border rounded p-2 text-sm bg-white focus:outline-none">
                         <option value="1">1er Semestre</option>
                         <option value="2">2do Semestre</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-slate-700 text-sm font-semibold mb-1">Nota (0-100)</label>
-                    <input type="number" id="nota" name="nota" min="0" max="100" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500" placeholder="Ej. 85">
+                    <input type="number" id="nota" min="0" max="100" class="w-full border rounded p-2 text-sm focus:outline-none bg-white" placeholder="Ej. 85">
                 </div>
             </div>
 
@@ -58,14 +47,13 @@
     </div>
 
     <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
-        <h2 class="text-xl font-bold mb-4 text-slate-800">Historial de Calificaciones</h2>
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Mi Registro de Notas Emitidas</h2>
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead>
                     <tr class="bg-slate-200 text-slate-700 text-left uppercase text-xs font-bold border-b">
                         <th class="py-3 px-4">Estudiante</th>
-                        <th class="py-3 px-4">Curso</th>
-                        <th class="py-3 px-4 text-center">Semestre</th>
+                        <th class="py-3 px-4">Curso / Grado</th>
                         <th class="py-3 px-4 text-center">Nota</th>
                         <th class="py-3 px-4 text-center">Acciones</th>
                     </tr>
@@ -73,23 +61,27 @@
                 <tbody>
                     {% for cal in calificaciones %}
                     <tr class="border-b hover:bg-slate-50">
-                        <td class="py-3 px-4 font-medium text-slate-900">{{ cal.estudiante_nombre }}</td>
-                        <td class="py-3 px-4 text-slate-600">{{ cal.curso_nombre }}</td>
-                        <td class="py-3 px-4 text-center">Semestre {{ cal.semestre }}</td>
+                        <td class="py-3 px-4 font-medium text-slate-900">
+                            <div>{{ cal.estudiante_nombre }}</div>
+                            <span class="text-xs text-slate-400 font-mono font-bold">{{ cal.carnet }}</span>
+                        </td>
+                        <td class="py-3 px-4 text-slate-600 text-xs">
+                            <div class="font-semibold text-slate-800">{{ cal.nombre_materia }}</div>
+                            <div>{{ cal.nombre_grado }} (Semestre {{ cal.semestre }})</div>
+                        </td>
                         <td class="py-3 px-4 text-center">
-                            <span class="px-2 py-1 rounded font-bold {% if cal.nota >= 61 %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                            <span class="px-2 py-1 rounded font-bold text-xs {% if cal.nota >= 61 %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
                                 {{ cal.nota }} pts
                             </span>
                         </td>
                         <td class="py-3 px-4 text-center space-x-2">
-                            <button onclick="abrirModalCalificacion('{{ cal.id }}', '{{ cal.estudiante_nombre }}', '{{ cal.curso_nombre }}', '{{ cal.semestre }}', '{{ cal.nota }}')" 
-                                    class="text-amber-600 hover:underline">Editar</button>
-                            <a href="/calificaciones/eliminar/{{ cal.id }}" onclick="return confirm('¿Eliminar esta nota?')" class="text-red-500 hover:underline">Eliminar</a>
+                            <button onclick="abrirModalNota('{{ cal.id }}', '{{ cal.estudiante_nombre }}', '{{ cal.nota }}')" class="text-amber-600 hover:underline text-xs font-bold">Editar</button>
+                            <a href="/calificaciones/eliminar/{{ cal.id }}" class="text-red-500 hover:underline text-xs">Eliminar</a>
                         </td>
                     </tr>
                     {% else %}
-                    <tr>
-                        <td colspan="5" class="py-4 text-center text-slate-500">No hay calificaciones registradas aún.</td>
+                    <tr> 
+                        <td colspan="4" class="py-4 text-center text-slate-400 text-sm">No has asentado ninguna calificación en tus cursos vinculados.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -98,50 +90,83 @@
     </div>
 </div>
 
-<div id="modalCalificacion" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
+<div id="modalNota" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white p-6 rounded-lg shadow-xl w-96">
         <h2 class="text-xl font-bold mb-2 text-slate-800">Modificar Nota</h2>
-        <p class="text-xs text-slate-500 mb-4"><span id="lbl_estudiante" class="font-semibold"></span> - <span id="lbl_curso" class="font-semibold"></span> (Semestre <span id="lbl_semestre"></span>)</p>
-        
-        <form id="formEditarCalificacion" action="" method="POST" onsubmit="return validarNotas('edit_nota')">
+        <p id="lbl_estudiante" class="text-xs text-slate-500 mb-4 font-semibold"></p>
+        <form id="formEditarNota" action="" method="POST">
             <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-semibold mb-1">Nueva Nota (0-100)</label>
-                <input type="number" id="edit_nota" name="nota" min="0" max="100" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Nueva Calificación (0-100)</label>
+                <input type="number" id="edit_nota" name="nota" min="0" max="100" class="w-full border rounded p-2 text-sm focus:outline-none bg-white">
             </div>
             <div class="flex justify-end space-x-2 mt-6">
-                <button type="button" onclick="cerrarModalCalificacion()" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded text-sm">Cancelar</button>
-                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded text-sm">Actualizar</button>
+                <button type="button" onclick="document.getElementById('modalNota').classList.add('hidden')" class="bg-slate-300 px-4 py-2 rounded text-xs font-bold">Cancelar</button>
+                <button type="submit" class="bg-amber-500 text-white px-4 py-2 rounded text-xs font-bold shadow">Actualizar</button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    function abrirModalCalificacion(id, estudiante, curso, semestre, nota) {
-        document.getElementById('formEditarCalificacion').action = "/calificaciones/editar/" + id;
-        document.getElementById('lbl_estudiante').innerText = estudiante;
-        document.getElementById('lbl_curso').innerText = curso;
-        document.getElementById('lbl_semestre').innerText = semestre;
+    function abrirModalNota(id, alumno, nota) {
+        document.getElementById('formEditarNota').action = "/calificaciones/editar/" + id;
+        document.getElementById('lbl_estudiante').innerText = "Alumno: " + alumno;
         document.getElementById('edit_nota').value = nota;
-        document.getElementById('modalCalificacion').classList.remove('hidden');
+        document.getElementById('modalNota').classList.remove('hidden');
     }
 
-    function cerrarModalCalificacion() {
-        document.getElementById('modalCalificacion').classList.add('hidden');
-    }
+    // escuchar cambios para poblar dinamicamente los estudiantes sentados en ese salon especifico
+    document.getElementById('asignacion_id').addEventListener('change', async function() {
+        let asignacionId = this.value;
+        let selectEstudiantes = document.getElementById('estudiante_id');
+        selectEstudiantes.innerHTML = '';
+        
+        if (!asignacionId) {
+            selectEstudiantes.innerHTML = '<option value="">-- Primero selecciona el curso --</option>';
+            selectEstudiantes.disabled = true; return;
+        }
+        
+        try {
+            let response = await fetch(`/api/asignaciones/${asignacionId}/estudiantes`);
+            let estudiantes = await response.json();
+            
+            if (estudiantes.length === 0) {
+                selectEstudiantes.innerHTML = '<option value="">No hay alumnos matriculados en este grado</option>';
+                selectEstudiantes.disabled = true; return;
+            }
+            
+            selectEstudiantes.innerHTML = '<option value="">-- Selecciona al estudiante --</option>';
+            estudiantes.forEach(est => {
+                let opt = document.createElement('option'); opt.value = est.id;
+                opt.innerText = `${est.nombre} (${est.carnet})`; selectEstudiantes.appendChild(opt);
+            });
+            selectEstudiantes.disabled = false;
+        } catch (error) { 
+            console.error("error al conectar con la api de alumnos por grado:", error); 
+        }
+    });
 
-    function validarNotas(idInput) {
-        let notaInput = document.getElementById(idInput).value;
-        if (notaInput === "") {
-            alert("Validación JS: Debes ingresar una nota.");
-            return false;
+    async function guardarCalificacionAsincrona(event) {
+        if (event) event.preventDefault();
+        let est = document.getElementById('estudiante_id').value;
+        let asig = document.getElementById('asignacion_id').value;
+        let sem = document.getElementById('semestre').value;
+        let nInput = document.getElementById('nota').value;
+        
+        if (!est || !asig || !nInput) return alert("Todos los campos del registro son obligatorios.");
+        let n = parseInt(nInput); if (n < 0 || n > 100) return alert("La nota de la certificacion debe estar entre 0 y 100.");
+        
+        try {
+            let res = await fetch('/api/calificaciones/crear', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ estudiante_id: parseInt(est), asignacion_id: parseInt(asig), semestre: parseInt(sem), nota: n }) 
+            });
+            let r = await res.json(); alert(r.success || r.error); if(res.ok) window.location.reload();
+        } catch (error) { 
+            alert("error de red al intentar asentar la nota en la api."); 
         }
-        let nota = parseInt(notaInput);
-        if (nota < 0 || nota > 100) {
-            alert("Validación JS: La nota debe estar entre 0 y 100 puntos.");
-            return false;
-        }
-        return true;
+        return false;
     }
 </script>
 {% endblock %}
