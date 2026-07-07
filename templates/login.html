@@ -3,33 +3,189 @@
 {% block title %}Login - Control Académico{% endblock %}
 
 {% block content %}
-<div class="h-screen flex items-center justify-center">
-    <div class="bg-white p-8 rounded-lg shadow-md w-96">
-        <h2 class="text-2xl font-bold mb-6 text-center text-slate-800">Sistema Escolar</h2>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-            {% for category, message in messages %}
-              <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 text-sm">
-                {{ message }}
-              </div>
-            {% endfor %}
-          {% endif %}
-        {% endwith %}
+<div class="min-h-screen w-full flex bg-[#F4F8FB] font-sans antialiased selection:bg-[#7FC8D6]/30 relative overflow-hidden">
+    
+    <div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#7FC8D6]/15 rounded-full blur-[120px] pointer-events-none z-0"></div>
+    <div class="absolute bottom-[-10%] left-[-5%] md:left-[40%] w-[400px] h-[400px] bg-[#2F6F8F]/10 rounded-full blur-[100px] pointer-events-none z-0"></div>
 
-        <form action="/login" method="POST">
-            <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-bold mb-2">Usuario</label>
-                <input type="text" name="usuario" required class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
+    <div class="hidden lg:block lg:w-1/2 relative bg-[#1F2D3A] z-10">
+        <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2070&auto=format&fit=crop" 
+             alt="Campus Universitario" 
+             class="absolute inset-0 w-full h-full object-cover opacity-85 mix-blend-luminosity" />
+        
+        <div class="absolute inset-0 bg-[#2F6F8F]/30 mix-blend-multiply"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-[#1F2D3A] via-[#1F2D3A]/10 to-transparent"></div>
+
+        <div class="absolute bottom-12 left-12 right-12 text-[#FFFFFF] max-w-md">
+            <p class="text-xs font-bold tracking-[0.25em] uppercase text-[#7FC8D6] mb-3">Portal Institucional</p>
+            <h2 class="text-3xl font-light tracking-tight leading-snug">
+                Innovación tecnológica para la <span class="font-semibold text-[#F4F8FB]">gestión educativa.</span>
+            </h2>
+        </div>
+    </div>
+
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 md:p-12 relative z-10">
+        
+        <div class="bg-[#FFFFFF] w-full max-w-md p-8 sm:p-10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(47,111,143,0.06)] border border-[#E3E8EE] backdrop-blur-sm transition-all duration-300">
+            
+            <div class="flex items-center gap-3.5 mb-8 pb-6 border-b border-[#E3E8EE]/60">
+                <div class="w-12 h-12 bg-[#2F6F8F]/10 border border-[#2F6F8F]/15 rounded-2xl flex items-center justify-center text-[#2F6F8F] shrink-0 shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.174L12 6.22l7.74 3.954m-15.48 0L12 14.128l7.74-3.954m-15.48 0v4.747c0 1.107.823 2.052 1.93 2.158A14.942 14.942 0 0012 17.5c1.472 0 2.87-.213 4.19-.605 1.107-.106 1.93-1.05 1.93-2.158v-4.747" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 class="text-xl font-black text-[#1F2D3A] tracking-tight leading-none mb-1">Control Académico</h2>
+                    <p class="text-xs text-[#5F6C7B] font-medium">Plataforma Digital Escolar</p>
+                </div>
             </div>
+
             <div class="mb-6">
-                <label class="block text-slate-700 text-sm font-bold mb-2">Contraseña</label>
-                <input type="password" name="password" required class="shadow appearance-none border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
+                <h3 class="text-2xl font-bold text-[#1F2D3A] tracking-tight">Ingresa a tu cuenta</h3>
+                <p class="text-sm text-[#5F6C7B] mt-1 font-medium">Digita tus credenciales autorizadas.</p>
             </div>
-            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full transition duration-200">
-                Ingresar
-            </button>
-        </form>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="bg-[#E35D5D]/8 border border-[#E35D5D]/20 text-[#E35D5D] px-4 py-3.5 rounded-2xl text-sm flex items-center gap-3 mb-6 animate-fade-in shadow-sm">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5 h-5 shrink-0">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                      </svg>
+                    <span class="font-semibold">{{ message }}</span>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
+            <form id="loginForm" action="/login" method="POST" class="space-y-5" novalidate>
+                
+                <div class="space-y-1.5">
+                    <label class="block text-[#1F2D3A] text-xs font-bold uppercase tracking-wider ml-1">Usuario o Correo</label>
+                    <div class="relative">
+                        <input type="text" id="usuario" name="usuario" placeholder="ejemplo@colegio.edu" required 
+                            class="bg-[#F4F8FB] border border-[#E3E8EE] rounded-2xl w-full py-3.5 px-4 text-[#1F2D3A] text-sm placeholder-[#5F6C7B]/40 focus:outline-none focus:ring-2 focus:ring-[#7FC8D6] focus:border-[#7FC8D6] shadow-sm transition-all duration-200 font-medium">
+                    </div>
+                    <p id="errorUsuario" class="hidden text-xs text-[#E35D5D] mt-1 font-semibold ml-1"></p>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="flex justify-between items-center ml-1">
+                        <label class="block text-[#1F2D3A] text-xs font-bold uppercase tracking-wider">Contraseña</label>
+                        <a href="#" class="text-xs font-bold text-[#2F6F8F] hover:text-[#4A90A4] transition-colors">¿La olvidaste?</a>
+                    </div>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" placeholder="••••••••" required 
+                            class="bg-[#F4F8FB] border border-[#E3E8EE] rounded-2xl w-full py-3.5 pl-4 pr-12 text-[#1F2D3A] text-sm placeholder-[#5F6C7B]/40 focus:outline-none focus:ring-2 focus:ring-[#7FC8D6] focus:border-[#7FC8D6] shadow-sm transition-all duration-200 font-medium">
+                        
+                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 pr-4 flex items-center text-[#5F6C7B]/50 hover:text-[#2F6F8F] transition-colors">
+                            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p id="errorPassword" class="hidden text-xs text-[#E35D5D] mt-1 font-semibold ml-1"></p>
+                </div>
+
+                <div class="flex items-center ml-1 pt-1">
+                    <input id="remember_me" name="remember_me" type="checkbox" 
+                           class="h-4 w-4 rounded border-[#E3E8EE] text-[#2F6F8F] focus:ring-[#7FC8D6] bg-[#F4F8FB]">
+                    <label for="remember_me" class="ml-2 block text-xs text-[#5F6C7B] font-medium selection:bg-transparent">
+                        Mantener mi sesión iniciada
+                    </label>
+                </div>
+
+                <div class="pt-3">
+                    <button type="submit" 
+                        class="w-full bg-[#2F6F8F] hover:bg-[#4A90A4] text-white font-bold py-3.5 px-4 rounded-2xl transition-all duration-300 shadow-[0_4px_12px_rgba(47,111,143,0.2)] hover:shadow-[0_6px_20px_rgba(74,144,164,0.3)] hover:-translate-y-0.5 transform flex items-center justify-center gap-2 tracking-wide text-sm">
+                        <span>Entrar al Sistema</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                        </svg>
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-8 pt-5 border-t border-[#E3E8EE]/60 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <a href="/" class="text-xs font-bold text-[#5F6C7B] hover:text-[#2F6F8F] flex items-center gap-1 transition-colors">
+                    ← Volver al inicio
+                </a>
+                <span class="text-[11px] text-[#5F6C7B]/60 font-medium">¿Problemas? <a href="#" class="text-[#2F6F8F] underline font-bold">Soporte</a></span>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.getElementById('loginForm');
+        const usuarioInput = document.getElementById('usuario');
+        const passwordInput = document.getElementById('password');
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        const errorUsuario = document.getElementById('errorUsuario');
+        const errorPassword = document.getElementById('errorPassword');
+
+        togglePasswordBtn.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            
+            if (isPassword) {
+                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 11-4.243-4.243m4.242 4.242L9.88 9.88" />`;
+            } else {
+                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />`;
+            }
+        });
+
+        form.addEventListener('submit', (e) => {
+            let isValid = true;
+            errorUsuario.classList.add('hidden');
+            errorPassword.classList.add('hidden');
+            usuarioInput.classList.remove('border-[#E35D5D]', 'focus:ring-[#E35D5D]', 'focus:border-[#E35D5D]');
+            passwordInput.classList.remove('border-[#E35D5D]', 'focus:ring-[#E35D5D]', 'focus:border-[#E35D5D]');
+
+            if (!usuarioInput.value.trim()) {
+                errorUsuario.textContent = 'El usuario es obligatorio.';
+                errorUsuario.classList.remove('hidden');
+                usuarioInput.classList.add('border-[#E35D5D]', 'focus:ring-[#E35D5D]', 'focus:border-[#E35D5D]');
+                isValid = false;
+            } else if (usuarioInput.value.trim().length < 3) {
+                errorUsuario.textContent = 'Mínimo 3 caracteres.';
+                errorUsuario.classList.remove('hidden');
+                usuarioInput.classList.add('border-[#E35D5D]', 'focus:ring-[#E35D5D]', 'focus:border-[#E35D5D]');
+                isValid = false;
+            }
+
+            if (!passwordInput.value) {
+                errorPassword.textContent = 'La contraseña es obligatoria.';
+                errorPassword.classList.remove('hidden');
+                passwordInput.classList.add('border-[#E35D5D]', 'focus:ring-[#E35D5D]', 'focus:border-[#E35D5D]');
+                isValid = false;
+            } else if (passwordInput.value.length < 4) {
+                errorPassword.textContent = 'Mínimo 4 caracteres.';
+                errorPassword.classList.remove('hidden');
+                passwordInput.classList.add('border-[#E35D5D]', 'focus:ring-[#E35D5D]', 'focus:border-[#E35D5D]');
+                isValid = false;
+            }
+
+            if (!isValid) e.preventDefault();
+        });
+
+        usuarioInput.addEventListener('input', () => {
+            if (usuarioInput.value.trim().length >= 3) {
+                errorUsuario.classList.add('hidden');
+                usuarioInput.classList.remove('border-[#E35D5D]', 'focus:ring-[#E35D5D]', 'focus:border-[#E35D5D]');
+            }
+        });
+
+        passwordInput.addEventListener('input', () => {
+            if (passwordInput.value.length >= 4) {
+                errorPassword.classList.add('hidden');
+                passwordInput.classList.remove('border-[#E35D5D]', 'focus:ring-[#E35D5D]', 'focus:border-[#E35D5D]');
+            }
+        });
+    });
+</script>
 {% endblock %}

@@ -3,191 +3,402 @@
 {% block title %}CRUD Personal Académico - Control Académico{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-10 p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+<div class="min-h-screen bg-[#F4F8FB] font-sans antialiased p-4 sm:p-6 lg:p-8 relative overflow-hidden selection:bg-[#7FC8D6]/30">
 
-    <div class="bg-white p-6 rounded-lg shadow-md h-fit">
-        <h2 class="text-xl font-bold mb-4 text-slate-800">Agregar Personal Académico</h2>
+    <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-[#7FC8D6]/10 rounded-full blur-[120px] pointer-events-none z-0"></div>
+    <div class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-[#2F6F8F]/5 rounded-full blur-[100px] pointer-events-none z-0"></div>
 
-        {% if session.get('rol') == 'admin' %}
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            {% for category, message in messages %}
-            <div class="p-3 rounded mb-4 text-sm {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
-                {{ message }}
+    <div class="max-w-7xl mx-auto relative z-10">
+        <div class="mb-8 flex items-center gap-4">
+            <div class="w-12 h-12 bg-[#FFFFFF] border border-[#E3E8EE] rounded-2xl flex items-center justify-center text-[#2F6F8F] shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                </svg>
             </div>
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-
-            <form id="formProfesor" onsubmit="return guardarProfesorAsincrono(event)">
-                <div class="mb-4">
-                    <label class="block text-slate-700 text-sm font-bold mb-2">Nombre Completo</label>
-                    <input type="text" id="nombre" name="nombre" required
-                        class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-slate-700 text-sm font-bold mb-2">Usuario (Login)</label>
-                    <input type="text" id="usuario" name="usuario" required
-                        class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="mb-4">
-                    <label class="block text-slate-700 text-sm font-bold mb-2">Contraseña Inicial</label>
-                    <input type="password" id="password" name="password" required
-                        class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
-                </div>
-                <div class="mb-6">
-                    <label class="block text-slate-700 text-sm font-bold mb-2">Rol del Usuario</label>
-                    <select id="rol" name="rol" class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
-                        <option value="profesor">Profesor (Acceso Limitado)</option>
-                        <option value="admin">Administrador (Acceso Global)</option>
-                    </select>
-                </div>
-                <button type="submit"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full transition">
-                    Guardar Registro
-                </button>
-            </form>
-        {% else %}
-            <div class="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded text-sm text-center">
-                ⚠️ Tu cuenta de <strong>Profesor</strong> no tiene permisos para dar de alta nuevo personal.
+            <div>
+                <h1 class="text-2xl font-black text-[#1F2D3A] tracking-tight">Gestión de Personal</h1>
+                <p class="text-sm text-[#5F6C7B] font-medium">Administra profesores y cuentas del sistema.</p>
             </div>
-        {% endif %}
-    </div>
+        </div>
 
-    <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
-        <h2 class="text-xl font-bold mb-4 text-slate-800">Cuentas Académicas y Administrativas</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full leading-normal">
-                <thead>
-                    <tr class="bg-slate-200 text-slate-700 text-left text-sm uppercase font-semibold">
-                        <th class="px-5 py-3 border-b-2 border-slate-200">ID</th>
-                        <th class="px-5 py-3 border-b-2 border-slate-200">Nombre</th>
-                        <th class="px-5 py-3 border-b-2 border-slate-200">Usuario</th>
-                        <th class="px-5 py-3 border-b-2 border-slate-200">Rol</th>
-                        <th class="px-5 py-3 border-b-2 border-slate-200 text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody class="text-sm">
-                    {% for prof in profesores %}
-                    <tr class="border-b border-slate-200 hover:bg-slate-50">
-                        <td class="px-5 py-4">{{ prof.id }}</td>
-                        <td class="px-5 py-4 font-medium text-slate-900">{{ prof.nombre }}</td>
-                        <td class="px-5 py-4 text-slate-600">{{ prof.usuario }}</td>
-                        <td class="px-5 py-4">
-                            <span class="px-2 py-1 rounded text-xs font-bold uppercase {% if prof.rol == 'admin' %}bg-purple-100 text-purple-700{% else %}bg-blue-100 text-blue-700{% endif %}">
-                                {{ prof.rol }}
-                            </span>
-                        </td>
-                        <td class="px-5 py-4 text-center space-x-2">
-                            {% if session.get('rol') == 'admin' %}
-                                <button onclick="abrirModal('{{ prof.id }}', '{{ prof.nombre }}', '{{ prof.usuario }}', '{{ prof.rol }}')" 
-                                        class="text-amber-600 hover:text-amber-900 font-semibold">Editar</button>
-                                <a href="/profesores/eliminar/{{ prof.id }}" onclick="return confirm('¿Está seguro de eliminar este usuario?')"
-                                    class="text-red-600 hover:text-red-900 font-semibold">Eliminar</a>
-                            {% else %}
-                                <span class="text-slate-400 text-xs italic">Sin permisos</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="bg-[#FFFFFF] p-8 rounded-[2rem] shadow-[0_8px_30px_rgba(47,111,143,0.04)] border border-[#E3E8EE] h-fit transition-all duration-300 relative overflow-hidden">
+                <div class="absolute top-0 left-0 right-0 h-1.5 bg-[#2F6F8F]"></div>
+                
+                <h2 class="text-lg font-bold text-[#1F2D3A] mb-6 flex items-center gap-2">
+                    Alta de Usuario
+                </h2>
+
+                {% if session.get('rol') == 'admin' %}
+                    <form id="formProfesor" class="space-y-4" novalidate>
+                        <div>
+                            <label class="block text-[#1F2D3A] text-[11px] font-bold uppercase tracking-wider ml-1 mb-1.5">Nombre Completo</label>
+                            <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" required
+                                class="bg-[#F4F8FB] border border-[#E3E8EE] rounded-2xl w-full py-3 px-4 text-[#1F2D3A] text-sm focus:outline-none focus:ring-2 focus:ring-[#7FC8D6] focus:border-[#7FC8D6] transition-all font-medium">
+                            <p id="errorNombre" class="hidden text-[11px] text-[#E35D5D] mt-1 font-semibold ml-1"></p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[#1F2D3A] text-[11px] font-bold uppercase tracking-wider ml-1 mb-1.5">Usuario (Login)</label>
+                            <input type="text" id="usuario" name="usuario" placeholder="Ej. jperez o correo" required
+                                class="bg-[#F4F8FB] border border-[#E3E8EE] rounded-2xl w-full py-3 px-4 text-[#1F2D3A] text-sm focus:outline-none focus:ring-2 focus:ring-[#7FC8D6] focus:border-[#7FC8D6] transition-all font-medium">
+                            <p id="errorUsuario" class="hidden text-[11px] text-[#E35D5D] mt-1 font-semibold ml-1"></p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[#1F2D3A] text-[11px] font-bold uppercase tracking-wider ml-1 mb-1.5">Contraseña Inicial</label>
+                            <input type="password" id="password" name="password" placeholder="••••••••" required
+                                class="bg-[#F4F8FB] border border-[#E3E8EE] rounded-2xl w-full py-3 px-4 text-[#1F2D3A] text-sm focus:outline-none focus:ring-2 focus:ring-[#7FC8D6] focus:border-[#7FC8D6] transition-all font-medium">
+                            <p id="errorPassword" class="hidden text-[11px] text-[#E35D5D] mt-1 font-semibold ml-1"></p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-[#1F2D3A] text-[11px] font-bold uppercase tracking-wider ml-1 mb-1.5">Rol de Sistema</label>
+                            <select id="rol" name="rol" class="bg-[#F4F8FB] border border-[#E3E8EE] rounded-2xl w-full py-3 px-4 text-[#1F2D3A] text-sm focus:outline-none focus:ring-2 focus:ring-[#7FC8D6] focus:border-[#7FC8D6] transition-all font-medium appearance-none">
+                                <option value="profesor">Profesor (Acceso Limitado)</option>
+                                <option value="admin">Administrador (Acceso Global)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="pt-3">
+                            <button type="button" onclick="validarYGuardarCreacion(event)"
+                                class="w-full bg-[#2F6F8F] hover:bg-[#4A90A4] text-white font-bold py-3.5 px-4 rounded-2xl transition-all duration-300 shadow-sm hover:-translate-y-0.5 text-sm flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                                </svg>
+                                Guardar Registro
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <div class="p-5 bg-[#E35D5D]/10 border border-[#E35D5D]/20 rounded-2xl text-center flex flex-col items-center gap-3">
+                        <div class="w-10 h-10 bg-[#E35D5D]/20 rounded-full flex items-center justify-center text-[#E35D5D]">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                        </div>
+                        <p class="text-sm text-[#E35D5D] font-medium leading-relaxed">
+                            Tu cuenta de <strong>Profesor</strong> no tiene privilegios para dar de alta a nuevo personal.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="bg-[#FFFFFF] p-6 sm:p-8 rounded-[2rem] shadow-[0_8px_30px_rgba(47,111,143,0.04)] border border-[#E3E8EE] lg:col-span-2">
+                <h2 class="text-lg font-bold text-[#1F2D3A] mb-6">Cuentas Registradas</h2>
+                
+                <div class="overflow-hidden border border-[#E3E8EE] rounded-2xl">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#F4F8FB] text-[#5F6C7B] text-[10px] uppercase tracking-wider font-bold border-b border-[#E3E8EE]">
+                                    <th class="px-5 py-4">Usuario</th>
+                                    <th class="px-5 py-4">Rol</th>
+                                    <th class="px-5 py-4 text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-[#E3E8EE]">
+                                {% for prof in profesores %}
+                                <tr class="hover:bg-[#F4F8FB]/50 transition-colors">
+                                    <td class="px-5 py-4">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-xl bg-[#2F6F8F]/10 text-[#2F6F8F] flex items-center justify-center font-bold text-xs uppercase shrink-0">
+                                                {{ prof.nombre[:2] }}
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-[#1F2D3A]">{{ prof.nombre }}</p>
+                                                <p class="text-xs text-[#5F6C7B] font-medium">@{{ prof.usuario }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-4">
+                                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider 
+                                            {% if prof.rol == 'admin' %}bg-[#2F6F8F]/15 text-[#2F6F8F] border border-[#2F6F8F]/20
+                                            {% else %}bg-[#7FC8D6]/20 text-[#2F6F8F] border border-[#7FC8D6]/30{% endif %}">
+                                            {{ prof.rol }}
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-4 text-center">
+                                        {% if session.get('rol') == 'admin' %}
+                                            <div class="flex justify-center gap-2">
+                                                <button onclick="abrirModal('{{ prof.id }}', '{{ prof.nombre }}', '{{ prof.usuario }}', '{{ prof.rol }}')" 
+                                                        class="p-2 text-[#5F6C7B] hover:text-[#2F6F8F] hover:bg-[#F4F8FB] rounded-xl transition-colors tooltip-edit">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                                    </svg>
+                                                </button>
+                                                <button onclick="eliminarProfesorAsincrono('{{ prof.id }}')"
+                                                        class="p-2 text-[#5F6C7B] hover:text-[#E35D5D] hover:bg-[#E35D5D]/10 rounded-xl transition-colors tooltip-delete">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" class="w-4 h-4">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        {% else %}
+                                            <span class="text-[#5F6C7B]/50 text-[11px] font-medium italic">Protegido</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
-<div id="modalEditar" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
-    <div class="bg-white p-6 rounded-lg shadow-xl w-96">
-        <h2 class="text-xl font-bold mb-4 text-slate-800">Modificar Usuario</h2>
-        <form id="formEditar" action="" method="POST" onsubmit="return validarEdicion()">
-            <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre Completo</label>
-                <input type="text" id="edit_nombre" name="nombre" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+<div id="modalEditar" class="fixed inset-0 bg-[#1F2D3A]/60 backdrop-blur-sm hidden flex items-center justify-center z-50 p-4 transition-opacity duration-300 opacity-0">
+    <div class="bg-[#FFFFFF] p-8 rounded-[2rem] shadow-2xl w-full max-w-md transform scale-95 transition-transform duration-300" id="modalCard">
+        <h2 class="text-xl font-black text-[#1F2D3A] mb-6">Actualizar Perfil</h2>
+        
+        <form id="formEditar" class="space-y-4" novalidate>
+            <input type="hidden" id="edit_id">
+            
+            <div>
+                <label class="block text-[#1F2D3A] text-[11px] font-bold uppercase tracking-wider ml-1 mb-1.5">Nombre Completo</label>
+                <input type="text" id="edit_nombre" name="nombre" required 
+                       class="bg-[#F4F8FB] border border-[#E3E8EE] rounded-2xl w-full py-3 px-4 text-[#1F2D3A] text-sm focus:outline-none focus:ring-2 focus:ring-[#7FC8D6] focus:border-[#7FC8D6] transition-all font-medium">
+                <p id="errorEditNombre" class="hidden text-[11px] text-[#E35D5D] mt-1 font-semibold ml-1"></p>
             </div>
-            <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-semibold mb-1">Usuario</label>
-                <input type="text" id="edit_usuario" name="usuario" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+            
+            <div>
+                <label class="block text-[#1F2D3A] text-[11px] font-bold uppercase tracking-wider ml-1 mb-1.5">Usuario</label>
+                <input type="text" id="edit_usuario" name="usuario" required 
+                       class="bg-[#F4F8FB] border border-[#E3E8EE] rounded-2xl w-full py-3 px-4 text-[#1F2D3A] text-sm focus:outline-none focus:ring-2 focus:ring-[#7FC8D6] focus:border-[#7FC8D6] transition-all font-medium">
+                <p id="errorEditUsuario" class="hidden text-[11px] text-[#E35D5D] mt-1 font-semibold ml-1"></p>
             </div>
-            <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-semibold mb-1">Rol</label>
-                <select id="edit_rol" name="rol" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
-                    <option value="profesor">profesor</option>
-                    <option value="admin">admin</option>
+            
+            <div>
+                <label class="block text-[#1F2D3A] text-[11px] font-bold uppercase tracking-wider ml-1 mb-1.5">Rol de Sistema</label>
+                <select id="edit_rol" name="rol" class="bg-[#F4F8FB] border border-[#E3E8EE] rounded-2xl w-full py-3 px-4 text-[#1F2D3A] text-sm focus:outline-none focus:ring-2 focus:ring-[#7FC8D6] focus:border-[#7FC8D6] transition-all font-medium appearance-none">
+                    <option value="profesor">Profesor (Limitado)</option>
+                    <option value="admin">Administrador (Global)</option>
                 </select>
             </div>
-            <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-semibold mb-1">Nueva Contraseña</label>
-                <input type="password" id="edit_password" name="password" placeholder="Dejar en blanco para mantener la actual" 
-                       class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+            
+            <div>
+                <label class="block text-[#1F2D3A] text-[11px] font-bold uppercase tracking-wider ml-1 mb-1.5 flex justify-between">
+                    <span>Nueva Contraseña</span>
+                    <span class="text-[#5F6C7B]/60 normal-case font-medium">Opcional</span>
+                </label>
+                <input type="password" id="edit_password" name="password" placeholder="Dejar en blanco para conservar actual" 
+                       class="bg-[#F4F8FB] border border-[#E3E8EE] rounded-2xl w-full py-3 px-4 text-[#1F2D3A] text-sm focus:outline-none focus:ring-2 focus:ring-[#7FC8D6] focus:border-[#7FC8D6] transition-all font-medium placeholder:text-[12px]">
+                <p id="errorEditPassword" class="hidden text-[11px] text-[#E35D5D] mt-1 font-semibold ml-1"></p>
             </div>
-            <div class="flex justify-end space-x-2 mt-6">
-                <button type="button" onclick="cerrarModal()" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded text-sm transition">Cancelar</button>
-                <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 rounded text-sm transition">Actualizar</button>
+            
+            <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-[#E3E8EE]">
+                <button type="button" onclick="cerrarModal()" 
+                        class="bg-[#F4F8FB] hover:bg-[#E3E8EE] text-[#5F6C7B] font-bold py-3 px-5 rounded-xl text-sm transition">
+                    Cancelar
+                </button>
+                <button type="button" onclick="validarYGuardarEdicion(event)" 
+                        class="bg-[#4CAF50] hover:bg-[#43a047] text-white font-bold py-3 px-6 rounded-xl text-sm transition shadow-sm hover:-translate-y-0.5">
+                    Guardar Cambios
+                </button>
             </div>
         </form>
     </div>
 </div>
 
 <script>
-    // PASAMOS EL ROL AL MODAL EN LUGAR DEL HASH DE CONTRASEÑA
-    function abrirModal(id, nombre, usuario, rol) {
-        document.getElementById('formEditar').action = "/profesores/editar/" + id;
-        document.getElementById('edit_nombre').value = nombre;
-        document.getElementById('edit_usuario').value = usuario;
-        document.getElementById('edit_rol').value = rol;
-        document.getElementById('edit_password').value = ""; // Nace limpio para no pisar el Hash
-        document.getElementById('modalEditar').classList.remove('hidden');
+    /* ==========================================
+       VALIDACIONES FRONT-END REUTILIZABLES
+       ========================================== */
+    const RegexValidaciones = {
+        // Solo letras y espacios, mín 3 caracteres
+        nombre: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,60}$/,
+        // Sin espacios, alfanumérico y guiones, mín 4 caracteres
+        usuario: /^[a-zA-Z0-9._-]{4,20}$/
+    };
+
+    function mostrarErrorInput(inputId, errorId, mensaje) {
+        const input = document.getElementById(inputId);
+        const errorText = document.getElementById(errorId);
+        input.classList.add('border-[#E35D5D]', 'focus:ring-[#E35D5D]', 'focus:border-[#E35D5D]');
+        errorText.textContent = mensaje;
+        errorText.classList.remove('hidden');
     }
 
-    function cerrarModal() {
-        document.getElementById('modalEditar').classList.add('hidden');
+    function limpiarErrorInput(inputId, errorId) {
+        const input = document.getElementById(inputId);
+        const errorText = document.getElementById(errorId);
+        input.classList.remove('border-[#E35D5D]', 'focus:ring-[#E35D5D]', 'focus:border-[#E35D5D]');
+        errorText.classList.add('hidden');
     }
 
-    function validarEdicion() {
-        let nombre = document.getElementById('edit_nombre').value.trim();
-        let usuario = document.getElementById('edit_usuario').value.trim();
-        if (!nombre || !usuario) {
-            alert("El nombre y el usuario son campos obligatorios.");
-            return false;
+    // Limpieza en tiempo real al escribir
+    ['nombre', 'usuario', 'password', 'edit_nombre', 'edit_usuario', 'edit_password'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            el.addEventListener('input', () => {
+                const errorId = id.includes('edit_') ? 
+                    'errorEdit' + id.split('_')[1].charAt(0).toUpperCase() + id.split('_')[1].slice(1) : 
+                    'error' + id.charAt(0).toUpperCase() + id.slice(1);
+                limpiarErrorInput(id, errorId);
+            });
         }
-        return true;
-    }
+    });
 
-    // Procesar el guardado incluyendo el campo ROL en la petición JSON
-    async function guardarProfesorAsincrono(event) {
+    /* ==========================================
+       FLUJO DE CREACIÓN
+       ========================================== */
+    async function validarYGuardarCreacion(event) {
         if (event) event.preventDefault();
+        let valido = true;
 
-        let nombre = document.getElementById('nombre').value.trim();
-        let usuario = document.getElementById('usuario').value.trim();
-        let password = document.getElementById('password').value.trim();
-        let rol = document.getElementById('rol').value;
+        const nombre = document.getElementById('nombre').value.trim();
+        const usuario = document.getElementById('usuario').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const rol = document.getElementById('rol').value;
 
-        if (!nombre || !usuario || !password) {
-            alert("Todos los campos obligatorios para el registro inicial.");
-            return false;
+        // Validar Nombre
+        if (!RegexValidaciones.nombre.test(nombre)) {
+            mostrarErrorInput('nombre', 'errorNombre', 'Ingresa un nombre válido (min. 3 letras, sin números).');
+            valido = false;
+        }
+        // Validar Usuario
+        if (!RegexValidaciones.usuario.test(usuario)) {
+            mostrarErrorInput('usuario', 'errorUsuario', 'El usuario debe tener al menos 4 caracteres y sin espacios.');
+            valido = false;
+        }
+        // Validar Password
+        if (password.length < 6) {
+            mostrarErrorInput('password', 'errorPassword', 'La contraseña debe tener al menos 6 caracteres.');
+            valido = false;
         }
 
+        if (!valido) return false;
+
+        // Si es válido, ejecutar Fetch
         try {
             let response = await fetch('/api/profesores/crear', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre: nombre, usuario: usuario, password: password, rol: rol })
+                body: JSON.stringify({ nombre, usuario, password, rol })
             });
+            let result = await response.json();
+            
+            if (!response.ok) {
+                mostrarToast(result.error, 'error'); // Función que ya tenías globalmente
+                return false;
+            }
+            mostrarToast(result.success, 'success');
+            setTimeout(() => window.location.reload(), 1000);
+        } catch (error) {
+            mostrarToast("Error de red al conectar con el servidor.", 'error');
+        }
+    }
 
+    /* ==========================================
+       GESTIÓN DEL MODAL Y EDICIÓN
+       ========================================== */
+    const modal = document.getElementById('modalEditar');
+    const modalCard = document.getElementById('modalCard');
+
+    function abrirModal(id, nombre, usuario, rol) {
+        document.getElementById('edit_id').value = id;
+        document.getElementById('edit_nombre').value = nombre;
+        document.getElementById('edit_usuario').value = usuario;
+        document.getElementById('edit_rol').value = rol;
+        document.getElementById('edit_password').value = "";
+        
+        // Limpiar errores residuales
+        limpiarErrorInput('edit_nombre', 'errorEditNombre');
+        limpiarErrorInput('edit_usuario', 'errorEditUsuario');
+        limpiarErrorInput('edit_password', 'errorEditPassword');
+
+        // Animación de entrada
+        modal.classList.remove('hidden');
+        setTimeout(() => {
+            modal.classList.remove('opacity-0');
+            modalCard.classList.remove('scale-95');
+        }, 10);
+    }
+
+    function cerrarModal() {
+        // Animación de salida
+        modal.classList.add('opacity-0');
+        modalCard.classList.add('scale-95');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+        }, 300);
+    }
+
+    async function validarYGuardarEdicion(event) {
+        if (event) event.preventDefault();
+        let valido = true;
+
+        const id = document.getElementById('edit_id').value;
+        const nombre = document.getElementById('edit_nombre').value.trim();
+        const usuario = document.getElementById('edit_usuario').value.trim();
+        const rol = document.getElementById('edit_rol').value;
+        const password = document.getElementById('edit_password').value.trim();
+
+        // Validar Nombre
+        if (!RegexValidaciones.nombre.test(nombre)) {
+            mostrarErrorInput('edit_nombre', 'errorEditNombre', 'Ingresa un nombre válido (min. 3 letras, sin números).');
+            valido = false;
+        }
+        // Validar Usuario
+        if (!RegexValidaciones.usuario.test(usuario)) {
+            mostrarErrorInput('edit_usuario', 'errorEditUsuario', 'Mínimo 4 caracteres y sin espacios.');
+            valido = false;
+        }
+        // Validar Password (Solo si escribió algo)
+        if (password.length > 0 && password.length < 6) {
+            mostrarErrorInput('edit_password', 'errorEditPassword', 'Si la cambias, debe tener mínimo 6 caracteres.');
+            valido = false;
+        }
+
+        if (!valido) return false;
+
+        try {
+            let response = await fetch(`/api/profesores/editar/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, usuario, rol, password })
+            });
             let result = await response.json();
 
             if (!response.ok) {
-                alert("Error desde la API: " + result.error);
+                mostrarToast(result.error, 'error');
                 return false;
             }
 
-            alert(result.success);
-            window.location.reload();
-
+            cerrarModal();
+            mostrarToast(result.success, 'success');
+            setTimeout(() => window.location.reload(), 1000);
         } catch (error) {
-            alert("Error de red al intentar conectar con la API REST.");
+            mostrarToast("Error de red al actualizar los datos.", 'error');
         }
-        return false;
+    }
+
+    /* ==========================================
+       ELIMINACIÓN
+       ========================================== */
+    async function eliminarProfesorAsincrono(id) {
+        // Podríamos hacer un modal personalizado aquí en el futuro en vez de 'confirm'
+        if (!confirm('¿Estás seguro de que deseas eliminar este usuario del sistema?')) return;
+
+        try {
+            let response = await fetch(`/api/profesores/eliminar/${id}`, {
+                method: 'DELETE'
+            });
+            let result = await response.json();
+
+            if (!response.ok) {
+                mostrarToast(result.error, 'error');
+                return;
+            }
+
+            mostrarToast(result.success, 'success');
+            setTimeout(() => window.location.reload(), 1000);
+        } catch (error) {
+            mostrarToast("Error de red al intentar eliminar el registro.", 'error');
+        }
     }
 </script>
 {% endblock %}

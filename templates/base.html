@@ -6,22 +6,196 @@
     <title>{% block title %}Control Académico{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-100">
+<body class="bg-slate-100 min-h-screen flex flex-col">
 
     {% if session.get('user_id') %}
-    <nav class="bg-blue-600 p-4 text-white shadow-md flex justify-between items-center">
-        <h1 class="text-xl font-bold"><a href="/dashboard">Control Académico</a></h1>
-        <div>
-            <span class="mr-4 text-sm font-medium">Docente: {{ session.get('user_name') }}</span>
-            <a href="/logout" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm transition">Cerrar Sesión</a>
+    <nav class="bg-slate-800 p-4 text-white shadow-md flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex items-center gap-4">
+            <h1 class="text-xl font-bold tracking-wide">
+                {% if session.get('rol') == 'estudiante' %}
+                    <a href="/portal-estudiante" class="hover:text-blue-400 transition">🏫 Control Académico</a>
+                {% else %}
+                    <a href="/dashboard" class="hover:text-blue-400 transition">🏫 Control Académico</a>
+                {% endif %}
+            </h1>
+            
+            <div class="hidden md:flex items-center space-x-4 border-l border-slate-700 pl-4 text-sm font-medium text-slate-300">
+                {% if session.get('rol') == 'estudiante' %}
+                    <a href="/portal-estudiante" class="hover:text-white transition">📋 Mis Calificaciones</a>
+                {% else %}
+                    <a href="/dashboard" class="hover:text-white transition">🏠 Inicio</a>
+                    <a href="/cursos_estudiantes" class="hover:text-white transition">📚 Cursos y Estudiantes</a>
+                    <a href="/calificaciones" class="hover:text-white transition">✍️ Calificaciones</a>
+                    
+                    {% if session.get('rol') == 'admin' %}
+                        <a href="/profesores" class="text-amber-400 hover:text-amber-300 font-semibold transition">⚙️ Administrar Personal</a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <div class="text-right">
+                <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider">
+                    {% if session.get('rol') == 'admin' %}
+                        Administrador
+                    {% elif session.get('rol') == 'profesor' %}
+                        Docente
+                    {% else %}
+                        Estudiante
+                    {% endif %}
+                </span>
+                <span class="text-sm font-medium text-slate-200">{{ session.get('user_name') }}</span>
+            </div>
+            <a href="/logout" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded text-sm font-semibold transition shadow-sm">
+                Cerrar Sesión
+            </a>
         </div>
     </nav>
+    
+    <div class="bg-slate-700 text-white text-xs flex justify-around p-2 md:hidden font-medium">
+        {% if session.get('rol') == 'estudiante' %}
+            <a href="/portal-estudiante" class="hover:text-blue-300">Mis Notas</a>
+        {% else %}
+            <a href="/dashboard" class="hover:text-blue-300">Inicio</a>
+            <a href="/cursos_estudiantes" class="hover:text-blue-300">Cursos</a>
+            <a href="/calificaciones" class="hover:text-blue-300">Notas</a>
+            {% if session.get('rol') == 'admin' %}
+                <a href="/profesores" class="text-amber-300">Cuentas</a>
+            {% endif %}
+        {% endif %}
+    </div>
     {% endif %}
 
-    <main>
+    <main class="flex-grow">
         {% block content %}
         {% endblock %}
     </main>
+
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+
+    <script>
+        function mostrarToast(mensaje, tipo = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `flex items-center gap-3 p-4 rounded-lg shadow-xl text-sm font-semibold border transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-auto min-w-[280px] max-w-sm`;
+
+            if (tipo === 'success') {
+                toast.classList.add('bg-green-50', 'border-green-200', 'text-green-800');
+                toast.innerHTML = `
+                    <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>${mensaje}</span>
+                `;
+            } else {
+                toast.classList.add('bg-red-50', 'border-red-200', 'text-red-800');
+                toast.innerHTML = `
+                    <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>${mensaje}</span>
+                `;
+            }
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100');
+                toast.classList.add('opacity-0', 'translate-y-2');
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3500);
+        }
+
+        function inicializarPaginacion({ data, registrosPorPagina = 10, containerTablaId, containerPaginacionId, renderFilaFunc }) {
+            let paginaActual = 1;
+            const totalPaginas = Math.ceil(data.length / registrosPorPagina);
+
+            function cambiarPagina(nuevaPagina) {
+                if (nuevaPagina < 1 || nuevaPagina > totalPaginas) return;
+                paginaActual = nuevaPagina;
+                renderizarTabla();
+                renderizarControles();
+            }
+
+            function renderizarTabla() {
+                const tbody = document.getElementById(containerTablaId);
+                if (!tbody) return;
+                tbody.innerHTML = '';
+
+                if (data.length === 0) {
+                    renderFilaFunc(null, tbody);
+                    return;
+                }
+
+                const inicio = (paginaActual - 1) * registrosPorPagina;
+                const fin = inicio + registrosPorPagina;
+                const itemsPagina = data.slice(inicio, fin);
+
+                itemsPagina.forEach(item => renderFilaFunc(item, tbody));
+            }
+
+            function renderizarControles() {
+                const container = document.getElementById(containerPaginacionId);
+                if (!container) return;
+                container.innerHTML = '';
+
+                if (totalPaginas <= 1) return;
+
+                const nav = document.createElement('nav');
+                nav.className = 'flex items-center justify-center space-x-1 mt-6 text-sm font-semibold text-slate-700';
+
+                const btnAnt = document.createElement('button');
+                btnAnt.className = `p-2 rounded hover:bg-slate-200 transition ${paginaActual === 1 ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`;
+                btnAnt.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+                `;
+                btnAnt.onclick = () => cambiarPagina(paginaActual - 1);
+                nav.appendChild(btnAnt);
+
+                const rangoMaximo = 2; 
+                for (let i = 1; i <= totalPaginas; i++) {
+                    if (i === 1 || i === totalPaginas || (i >= paginaActual - rangoMaximo && i <= paginaActual + rangoMaximo)) {
+                        const btnNum = document.createElement('button');
+                        btnNum.innerText = i;
+                        btnNum.className = `px-3 py-1.5 rounded transition ${paginaActual === i ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-slate-200'}`;
+                        btnNum.onclick = () => cambiarPagina(i);
+                        nav.appendChild(btnNum);
+                    } else if (i === 2 || i === totalPaginas - 1) {
+                        const puntos = document.createElement('span');
+                        puntos.innerText = '...';
+                        puntos.className = 'px-2 text-slate-400 select-none';
+                        nav.appendChild(puntos);
+                        
+                        if (i === 2) i = paginaActual - rangoMaximo - 1;
+                        else if (i === totalPaginas - 1) i = totalPaginas - 1;
+                    }
+                }
+
+                const btnSig = document.createElement('button');
+                btnSig.className = `p-2 rounded hover:bg-slate-200 transition ${paginaActual === totalPaginas ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`;
+                btnSig.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+                `;
+                btnSig.onclick = () => cambiarPagina(paginaActual + 1);
+                nav.appendChild(btnSig);
+
+                container.appendChild(nav);
+            }
+
+            cambiarPagina(1);
+        }
+    </script>
 
 </body>
 </html>

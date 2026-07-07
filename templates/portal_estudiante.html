@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Portal del Estudiante - Control Académico{% endblock %}
+
+{% block content %}
+<div class="container mx-auto mt-10 p-4 max-w-4xl">
+
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8 border-l-4 border-blue-600">
+        <h2 class="text-2xl font-bold text-slate-800 mb-2">¡Bienvenido, {{ perfil.nombre }}!</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 text-sm text-slate-600">
+            <div>
+                <span class="font-bold block text-slate-700">Carné Universitario:</span>
+                <span class="font-mono text-base text-blue-700 font-semibold">{{ perfil.carnet }}</span>
+            </div>
+            <div>
+                <span class="font-bold block text-slate-700">Canales de Contacto:</span>
+                <span>{{ perfil.correo }} {{ '/ ' + perfil.telefono if perfil.telefono }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-lg font-bold mb-4 text-slate-800 flex items-center">
+            📊 Tu Historial de Rendimiento Académico por Semestre
+        </h3>
+
+        {% if notas %}
+        <div class="overflow-x-auto">
+            <table class="min-w-full leading-normal">
+                <thead>
+                    <tr class="bg-slate-100 text-slate-600 text-left text-xs uppercase font-semibold">
+                        <th class="px-5 py-3 border-b border-slate-200">Materia / Asignatura</th>
+                        <th class="px-5 py-3 border-b border-slate-200 text-center">Semestre Escolar</th>
+                        <th class="px-5 py-3 border-b border-slate-200 text-center">Nota Final</th>
+                        <th class="px-5 py-3 border-b border-slate-200 text-center">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    {% for n in notas %}
+                    <tr class="border-b border-slate-200 hover:bg-slate-50">
+                        <td class="px-5 py-4 font-medium text-slate-800">{{ n.nombre_materia }}</td>
+                        <td class="px-5 py-4 text-center text-slate-600 font-bold">
+                            {{ n.semestre }}° Semestre
+                        </td>
+                        <td class="px-5 py-4 text-center font-bold text-base text-slate-900">
+                            {{ n.nota }} pts
+                        </td>
+                        <td class="px-5 py-4 text-center">
+                            {% if n.nota >= 61 %}
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Aprobado
+                                </span>
+                            {% else %}
+                                <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                    Reprobado
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="p-6 bg-slate-50 text-slate-500 rounded border text-center text-sm">
+            Aún no se registran actas de calificaciones publicadas para tu carné en este ciclo escolar.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

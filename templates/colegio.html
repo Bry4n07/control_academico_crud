@@ -3,127 +3,269 @@
 {% block title %}Inicio - Colegio de la Asunción{% endblock %}
 
 {% block content %}
-<nav class="bg-white shadow-md fixed w-full top-0 left-0 z-50 px-6 py-4 flex justify-between items-center">
-    <div class="flex items-center space-x-2">
-        <span class="text-2xl font-bold text-blue-600">🏫 Colegio Asunción</span>
+<!-- Navbar Moderna con Efecto de Desfoque y Botón Pulido -->
+<nav class="bg-[#FFFFFF]/90 backdrop-blur-md border-b border-[#E3E8EE] fixed w-full top-0 left-0 z-50 px-8 py-4 flex justify-between items-center transition-all">
+    <div class="flex items-center space-x-3">
+        <div class="bg-[#F4F8FB] p-2 rounded-xl border border-[#E3E8EE]">
+            <!-- Heroicon: Academic Cap -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-[#1F2D3A]">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.174L12 6.22l7.74 3.954m-15.48 0L12 14.128l7.74-3.954m-15.48 0v4.747c0 1.107.823 2.052 1.93 2.158A14.942 14.942 0 0012 17.5c1.472 0 2.87-.213 4.19-.605 1.107-.106 1.93-1.05 1.93-2.158v-4.747" />
+            </svg>
+        </div>
+        <span class="text-xl font-black tracking-tight text-[#1F2D3A]">School U</span>
     </div>
-    <div class="space-x-6 text-slate-600 font-medium text-sm hidden md:flex">
-        <a href="#inicio" class="hover:text-blue-600 transition">Inicio</a>
-        <a href="#nosotros" class="hover:text-blue-600 transition">Nosotros</a>
-        <a href="#profesores" class="hover:text-blue-600 transition">Profesores</a>
-        <a href="#Galeria" class="hover:text-blue-600 transition">Galería</a>
+    
+    <div class="hidden lg:flex items-center space-x-8 text-sm font-semibold tracking-wide text-[#5F6C7B]">
+        <a href="#inicio" class="hover:text-[#2F6F8F] relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#2F6F8F] hover:after:w-full after:transition-all duration-300">Inicio</a>
+        <a href="#nosotros" class="hover:text-[#2F6F8F] relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#2F6F8F] hover:after:w-full after:transition-all duration-300">Nosotros</a>
+        <a href="#profesores" class="hover:text-[#2F6F8F] relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#2F6F8F] hover:after:w-full after:transition-all duration-300">Profesores</a>
+        <a href="#Galeria" class="hover:text-[#2F6F8F] relative py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#2F6F8F] hover:after:w-full after:transition-all duration-300">Galería</a>
     </div>
+
     <div>
         <a href="/login"
-            class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg text-sm transition shadow">
-            Ingresar al Sistema
+            class="bg-[#2F6F8F] hover:bg-[#4A90A4] text-white font-bold py-2.5 px-6 rounded-xl text-sm transition-all duration-300 shadow-sm hover:shadow-md hover:-translate-y-0.5 transform flex items-center gap-2">
+            <span>Ingresar al Sistema</span>
+            <!-- Heroicon: Arrow Right -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
         </a>
     </div>
 </nav>
 
-<section id="inicio" class="pt-32 pb-20 bg-gradient-to-r from-blue-50 to-indigo-50 px-6">
-    <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
-        <div class="max-w-xl">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-slate-800 leading-tight mb-4">
-                Educación Integral para el Éxito del Mañana
+<!-- Hero Section: Diseño Asimétrico con Grid Embebido -->
+<section id="inicio" class="pt-40 pb-24 bg-[#F4F8FB] px-6 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-[#7FC8D6]/10 rounded-full blur-3xl -z-10"></div>
+    
+    <div class="container mx-auto max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
+            <span class="inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full text-xs font-semibold bg-[#7FC8D6]/20 text-[#2F6F8F] border border-[#7FC8D6]/30">
+                <!-- Heroicon: Sparkles -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 21l-.813-5.096L3 15l5.187-.813L9 9l.813 5.187L15 15l-5.187.813zM18.25 5.25L17.5 9l-.75-3.75L13 4.5l3.75-.75L17.5 1l.75 3.75L22 4.5l-3.75.75z" />
+                </svg>
+                Admisiones Abiertas Ciclo 2026
+            </span>
+            <h1 class="text-4xl md:text-6xl font-black text-[#1F2D3A] leading-[1.1] tracking-tight">
+                Educación Integral para el Éxito del <span class="text-[#2F6F8F]">Mañana</span>
             </h1>
-            <p class="text-slate-600 mb-6 leading-relaxed">
-                Formamos líderes con valores sólidos, excelencia académica y las herramientas tecnológicas necesarias
-                para afrontar los retos del futuro del país.
+            <p class="text-[#5F6C7B] text-lg md:text-xl font-normal max-w-2xl mx-auto lg:mx-0 leading-relaxed">
+                Formamos líderes con valores sólidos, excelencia académica y las herramientas tecnológicas necesarias para afrontar los retos del futuro del país.
             </p>
-            <a href="#nosotros"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition shadow-md inline-block">
-                Conoce Más Sobre Nosotros
-            </a>
-        </div>
-        <div class="w-full md:w-1/2">
-            <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80"
-                alt="Colegio" class="rounded-xl shadow-lg w-full object-cover h-80">
-        </div>
-    </div>
-</section>
-
-<section id="nosotros" class="py-20 bg-white px-6">
-    <div class="container mx-auto max-w-5xl">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-slate-800">Nuestra Identidad</h2>
-            <p class="text-slate-500 mt-2">Comprometidos con el desarrollo estudiantil.</p>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div class="bg-slate-50 p-8 rounded-xl border border-slate-100 shadow-sm">
-                <div class="text-3xl mb-4">🎯</div>
-                <h3 class="text-xl font-bold text-slate-800 mb-3">Misión</h3>
-                <p class="text-slate-600 leading-relaxed text-sm">
-                    Brindar una educación de la más alta calidad, promoviendo el pensamiento crítico, la innovación
-                    tecnológica y los valores morales para formar ciudadanos responsables y comprometidos con el
-                    progreso social.
-                </p>
+            <div class="pt-4 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                <a href="#nosotros"
+                    class="bg-[#2F6F8F] hover:bg-[#4A90A4] text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 shadow-md hover:shadow-lg text-center">
+                    Conoce Más Sobre Nosotros
+                </a>
+                <a href="#Galeria"
+                    class="bg-[#FFFFFF] hover:bg-[#F4F8FB] text-[#1F2D3A] font-bold py-4 px-8 rounded-xl transition-all duration-300 border border-[#E3E8EE] text-center shadow-sm">
+                    Ver Video Institucional
+                </a>
             </div>
-            <div class="bg-slate-50 p-8 rounded-xl border border-slate-100 shadow-sm">
-                <div class="text-3xl mb-4">👁️‍🗨️</div>
-                <h3 class="text-xl font-bold text-slate-800 mb-3">Visión</h3>
-                <p class="text-slate-600 leading-relaxed text-sm">
-                    Ser reconocidos a nivel nacional como la institución educativa líder en excelencia académica y
-                    tecnológica, egresando profesionales capaces de transformar positivamente su entorno global.
-                </p>
+        </div>
+        
+        <div class="lg:col-span-5 relative flex justify-center">
+            <div class="relative w-full max-w-md">
+                <div class="absolute -top-4 -left-4 w-24 h-24 bg-[#7FC8D6]/30 rounded-2xl -z-10 animate-pulse"></div>
+                <div class="absolute -bottom-4 -right-4 w-32 h-32 bg-[#2F6F8F]/10 rounded-2xl -z-10"></div>
+                <img src="https://images.unsplash.com/photo-1541339907198-e08756dedf3f?auto=format&fit=crop&w=800&q=80"
+                    alt="Colegio" class="rounded-2xl shadow-xl w-full object-cover h-[400px] border border-[#E3E8EE]">
             </div>
         </div>
     </div>
 </section>
 
-<section id="profesores" class="py-20 bg-slate-50 px-6">
+<!-- Sección: Tarjetas de Impacto / Estadísticas -->
+<section class="py-12 bg-[#FFFFFF] px-6 border-y border-[#E3E8EE]">
     <div class="container mx-auto max-w-5xl">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-slate-800">Nuestro Cuerpo Docente</h2>
-            <p class="text-slate-500 mt-2">Profesionales capacitados y dedicados a la enseñanza.</p>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div class="space-y-1">
+                <p class="text-4xl font-black text-[#2F6F8F]">25+</p>
+                <p class="text-xs font-semibold text-[#5F6C7B] uppercase tracking-wider">Años de Trayectoria</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-4xl font-black text-[#2F6F8F]">100%</p>
+                <p class="text-xs font-semibold text-[#5F6C7B] uppercase tracking-wider">Excelencia Académica</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-4xl font-black text-[#2F6F8F]">50+</p>
+                <p class="text-xs font-semibold text-[#5F6C7B] uppercase tracking-wider">Docentes Certificados</p>
+            </div>
+            <div class="space-y-1">
+                <p class="text-4xl font-black text-[#2F6F8F]">1.5k+</p>
+                <p class="text-xs font-semibold text-[#5F6C7B] uppercase tracking-wider">Egresados Exitosos</p>
+            </div>
         </div>
+    </div>
+</section>
+
+<!-- Nosotros Section: Tarjetas de Enfoque con Íconos Estilizados -->
+<section id="nosotros" class="py-24 bg-[#F4F8FB] px-6">
+    <div class="container mx-auto max-w-5xl">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+            <div class="lg:sticky lg:top-28 space-y-4 text-center lg:text-left">
+                <h2 class="text-3xl md:text-4xl font-black text-[#1F2D3A] tracking-tight">Nuestra Identidad</h2>
+                <p class="text-[#5F6C7B] text-sm leading-relaxed">
+                    Comprometidos firmemente con el desarrollo humano, científico y tecnológico de cada uno de nuestros estudiantes.
+                </p>
+            </div>
+            
+            <div class="lg:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Tarjeta Misión -->
+                <div class="bg-[#FFFFFF] p-8 rounded-2xl border border-[#E3E8EE] shadow-sm transition-all hover:shadow-md hover:-translate-y-1 duration-300">
+                    <div class="w-12 h-12 bg-[#2F6F8F]/10 rounded-xl flex items-center justify-center mb-6 border border-[#2F6F8F]/20 text-[#2F6F8F]">
+                        <!-- Heroicon: Flag -->
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-[#1F2D3A] mb-3">Misión</h3>
+                    <p class="text-[#5F6C7B] leading-relaxed text-sm">
+                        Brindar una educación de la más alta calidad, promoviendo el pensamiento crítico, la innovación tecnológica y los valores morales para formar ciudadanos responsables.
+                    </p>
+                </div>
+                <!-- Tarjeta Visión -->
+                <div class="bg-[#FFFFFF] p-8 rounded-2xl border border-[#E3E8EE] shadow-sm transition-all hover:shadow-md hover:-translate-y-1 duration-300">
+                    <div class="w-12 h-12 bg-[#7FC8D6]/20 rounded-xl flex items-center justify-center mb-6 border border-[#7FC8D6]/40 text-[#2F6F8F]">
+                        <!-- Heroicon: Eye -->
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-[#2F6F8F]">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-[#1F2D3A] mb-3">Visión</h3>
+                    <p class="text-[#5F6C7B] leading-relaxed text-sm">
+                        Ser reconocidos a nivel nacional como la institución educativa líder en excelencia académica y tecnológica, egresando profesionales capaces de transformar positivamente su entorno.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Profesores Section: Grid de Perfiles Minimalistas -->
+<section id="profesores" class="py-24 bg-[#FFFFFF] px-6">
+    <div class="container mx-auto max-w-5xl">
+        <div class="text-center max-w-xl mx-auto mb-16 space-y-3">
+            <h2 class="text-3xl font-black text-[#1F2D3A] tracking-tight">Nuestro Cuerpo Docente</h2>
+            <p class="text-[#5F6C7B] text-sm">Especialistas apasionados y dedicados por completo al crecimiento pedagógico de los alumnos.</p>
+        </div>
+        
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-            <div class="bg-white p-6 rounded-xl shadow-sm text-center border">
-                <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80"
-                    alt="Profesor" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 shadow">
-                <h4 class="font-bold text-slate-800">Inga. María López</h4>
-                <p class="text-xs text-blue-600 font-semibold uppercase mt-1">Área de Ciencias</p>
+            <!-- Tarjeta Docente 1 -->
+            <div class="group bg-[#FFFFFF] rounded-2xl overflow-hidden border border-[#E3E8EE] shadow-sm hover:shadow-md transition-all duration-300">
+                <div class="relative overflow-hidden h-64 bg-[#F4F8FB]">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80"
+                        alt="Profesor" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-105">
+                </div>
+                <div class="p-6 text-center border-t border-[#E3E8EE]">
+                    <h4 class="font-bold text-lg text-[#1F2D3A]">Inga. María López</h4>
+                    <p class="text-xs font-bold text-[#2F6F8F] bg-[#2F6F8F]/10 inline-block px-3 py-1 rounded-full uppercase tracking-wider mt-2">
+                        Área de Ciencias
+                    </p>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm text-center border">
-                <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&q=80"
-                    alt="Profesor" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 shadow">
-                <h4 class="font-bold text-slate-800">Lic. Carlos Estrada</h4>
-                <p class="text-xs text-blue-600 font-semibold uppercase mt-1">Área de Historia</p>
+            
+            <!-- Tarjeta Docente 2 -->
+            <div class="group bg-[#FFFFFF] rounded-2xl overflow-hidden border border-[#E3E8EE] shadow-sm hover:shadow-md transition-all duration-300">
+                <div class="relative overflow-hidden h-64 bg-[#F4F8FB]">
+                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80"
+                        alt="Profesor" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-105">
+                </div>
+                <div class="p-6 text-center border-t border-[#E3E8EE]">
+                    <h4 class="font-bold text-lg text-[#1F2D3A]">Lic. Carlos Estrada</h4>
+                    <p class="text-xs font-bold text-[#2F6F8F] bg-[#2F6F8F]/10 inline-block px-3 py-1 rounded-full uppercase tracking-wider mt-2">
+                        Área de Historia
+                    </p>
+                </div>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm text-center border">
-                <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80"
-                    alt="Profesor" class="w-24 h-24 rounded-full mx-auto object-cover mb-4 shadow">
-                <h4 class="font-bold text-slate-800">Profra. Ana Martínez</h4>
-                <p class="text-xs text-blue-600 font-semibold uppercase mt-1">Área de Literatura</p>
+            
+            <!-- Tarjeta Docente 3 -->
+            <div class="group bg-[#FFFFFF] rounded-2xl overflow-hidden border border-[#E3E8EE] shadow-sm hover:shadow-md transition-all duration-300">
+                <div class="relative overflow-hidden h-64 bg-[#F4F8FB]">
+                    <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80"
+                        alt="Profesor" class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500 transform group-hover:scale-105">
+                </div>
+                <div class="p-6 text-center border-t border-[#E3E8EE]">
+                    <h4 class="font-bold text-lg text-[#1F2D3A]">Profra. Ana Martínez</h4>
+                    <p class="text-xs font-bold text-[#2F6F8F] bg-[#2F6F8F]/10 inline-block px-3 py-1 rounded-full uppercase tracking-wider mt-2">
+                        Área de Literatura
+                    </p>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
-<section id="Galeria" class="py-20 bg-white px-6">
-    <div class="container mx-auto max-w-5xl">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-bold text-slate-800">Vida Estudiantil</h2>
-            <p class="text-slate-500 mt-2">Conoce nuestras instalaciones y actividades en video.</p>
+<!-- Galería / Vida Estudiantil: Estructura de Teatro Inmersivo -->
+<section id="Galeria" class="py-24 bg-[#F4F8FB] px-6">
+    <div class="container mx-auto max-w-5xl space-y-12">
+        <div class="text-center max-w-xl mx-auto space-y-3">
+            <h2 class="text-3xl font-black text-[#1F2D3A] tracking-tight">Vida Estudiantil</h2>
+            <p class="text-[#5F6C7B] text-sm">Explora las instalaciones y las actividades a través de nuestro recorrido audiovisual.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div class="aspect-video bg-slate-200 rounded-xl overflow-hidden shadow-md">
-                <iframe class="w-full h-full" src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-                    title="Video Institucional" frameborder="0" allowfullscreen></iframe>
+        
+        <div class="bg-[#FFFFFF] p-4 rounded-3xl border border-[#E3E8EE] shadow-md grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <!-- Contenedor Responsivo para el Nuevo Video Solicitado -->
+            <div class="lg:col-span-7 aspect-video w-full rounded-2xl overflow-hidden shadow-inner border border-[#E3E8EE] bg-black">
+                <iframe class="w-full h-full" src="https://www.youtube.com/embed/uRCiFqG5bmw?si=PoOgF9rDqnGuXb1c" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
             </div>
-            <div class="space-y-4">
-                <h3 class="text-2xl font-bold text-slate-800">Instalaciones de Primer Nivel</h3>
-                <p class="text-slate-600 text-sm leading-relaxed">
-                    Contamos con laboratorios de computación equipados, canchas deportivas, áreas recreativas seguras y
-                    salones climatizados para garantizar el confort de nuestra comunidad escolar durante todo el ciclo
-                    académico.
+            <div class="lg:col-span-5 p-4 space-y-4">
+                <span class="text-xs font-bold text-[#2F6F8F] uppercase tracking-widest">Infraestructura</span>
+                <h3 class="text-2xl font-bold text-[#1F2D3A] tracking-tight">Instalaciones de Primer Nivel</h3>
+                <p class="text-[#5F6C7B] text-sm leading-relaxed">
+                    Contamos con laboratorios de computación de última generación, complejos deportivos integrales, áreas verdes recreativas y aulas totalmente climatizadas diseñadas para potenciar el enfoque cognitivo.
                 </p>
             </div>
         </div>
     </div>
 </section>
 
-<footer class="bg-slate-800 text-slate-400 py-8 px-6 text-center text-sm border-t border-slate-700">
-    <p>&copy; 2026 Colegio de la Asunción. Todos los derechos reservados.</p>
+<!-- Footer: Bloques de Enlaces Estilo Plataforma Institucional -->
+<footer class="bg-[#1F2D3A] text-[#F4F8FB]/70 pt-16 pb-8 px-6 border-t border-[#E3E8EE]/10">
+    <div class="container mx-auto max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-10 pb-12 border-b border-[#E3E8EE]/10 text-left">
+        <div class="space-y-4">
+            <div class="flex items-center space-x-2 text-white font-bold text-lg">
+                <!-- Heroicon: Academic Cap -->
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-[#7FC8D6]">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.174L12 6.22l7.74 3.954m-15.48 0L12 14.128l7.74-3.954m-15.48 0v4.747c0 1.107.823 2.052 1.93 2.158A14.942 14.942 0 0012 17.5c1.472 0 2.87-.213 4.19-.605 1.107-.106 1.93-1.05 1.93-2.158v-4.747" />
+                </svg>
+                <span>School U</span>
+            </div>
+            <p class="text-xs leading-relaxed max-w-xs">Educación de vanguardia comprometida con el desarrollo académico y los valores humanos.</p>
+        </div>
+        <div class="space-y-3">
+            <h5 class="text-white font-semibold text-sm tracking-wider uppercase">Enlaces rápidos</h5>
+            <ul class="text-xs space-y-2">
+                <li><a href="#inicio" class="hover:text-white transition">Inicio</a></li>
+                <li><a href="#nosotros" class="hover:text-white transition">Nosotros</a></li>
+                <li><a href="#profesores" class="hover:text-white transition">Profesores</a></li>
+            </ul>
+        </div>
+        <div class="space-y-3">
+            <h5 class="text-white font-semibold text-sm tracking-wider uppercase">Contacto</h5>
+            <div class="text-xs space-y-2">
+                <p class="flex items-center gap-1.5">
+                    <!-- Heroicon: MapPin -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-[#7FC8D6]">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25s-7.5-4.108-7.5-11.25A7.5 7.5 0 1119.5 10.5z" />
+                    </svg>
+                    <span>Central, Guatemala</span>
+                </p>
+                <p class="flex items-center gap-1.5">
+                    <!-- Heroicon: Envelope -->
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 text-[#7FC8D6]">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                    </svg>
+                    <span>info@schoolU.edu.gt</span>
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="container mx-auto max-w-5xl pt-8 text-center text-xs">
+        <p>&copy; 2026 a School U. Todos los derechos reservados.</p>
+    </div>
 </footer>
 {% endblock %}
