@@ -1,49 +1,61 @@
 {% extends 'base.html' %}
 
-{% block title %}CRUD Profesores - Control Académico{% endblock %}
+{% block title %}CRUD Personal Académico - Control Académico{% endblock %}
 
 {% block content %}
 <div class="container mx-auto mt-10 p-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
 
     <div class="bg-white p-6 rounded-lg shadow-md h-fit">
-        <h2 class="text-xl font-bold mb-4 text-slate-800">Agregar Profesor</h2>
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Agregar Personal Académico</h2>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div
-            class="p-3 rounded mb-4 text-sm {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
+        {% if session.get('rol') == 'admin' %}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="p-3 rounded mb-4 text-sm {% if category == 'success' %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-700{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form id="formProfesor" onsubmit="return guardarProfesorAsincrono(event)">
+                <div class="mb-4">
+                    <label class="block text-slate-700 text-sm font-bold mb-2">Nombre Completo</label>
+                    <input type="text" id="nombre" name="nombre" required
+                        class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-slate-700 text-sm font-bold mb-2">Usuario (Login)</label>
+                    <input type="text" id="usuario" name="usuario" required
+                        class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-slate-700 text-sm font-bold mb-2">Contraseña Inicial</label>
+                    <input type="password" id="password" name="password" required
+                        class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-slate-700 text-sm font-bold mb-2">Rol del Usuario</label>
+                    <select id="rol" name="rol" class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
+                        <option value="profesor">Profesor (Acceso Limitado)</option>
+                        <option value="admin">Administrador (Acceso Global)</option>
+                    </select>
+                </div>
+                <button type="submit"
+                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full transition">
+                    Guardar Registro
+                </button>
+            </form>
+        {% else %}
+            <div class="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded text-sm text-center">
+                ⚠️ Tu cuenta de <strong>Profesor</strong> no tiene permisos para dar de alta nuevo personal.
+            </div>
         {% endif %}
-        {% endwith %}
-
-        <form id="formProfesor" onsubmit="return guardarProfesorAsincrono(event)">
-            <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-bold mb-2">Nombre Completo</label>
-                <input type="text" id="nombre" name="nombre"
-                    class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
-            </div>
-            <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-bold mb-2">Usuario</label>
-                <input type="text" id="usuario" name="usuario"
-                    class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
-            </div>
-            <div class="mb-6">
-                <label class="block text-slate-700 text-sm font-bold mb-2">Contraseña</label>
-                <input type="password" id="password" name="password"
-                    class="shadow border rounded w-full py-2 px-3 text-slate-700 focus:outline-none focus:border-blue-500">
-            </div>
-            <button type="submit"
-                class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full transition">
-                Guardar Profesor
-            </button>
-        </form>
     </div>
 
     <div class="bg-white p-6 rounded-lg shadow-md lg:col-span-2">
-        <h2 class="text-xl font-bold mb-4 text-slate-800">Profesores Registrados</h2>
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Cuentas Académicas y Administrativas</h2>
         <div class="overflow-x-auto">
             <table class="min-w-full leading-normal">
                 <thead>
@@ -51,6 +63,7 @@
                         <th class="px-5 py-3 border-b-2 border-slate-200">ID</th>
                         <th class="px-5 py-3 border-b-2 border-slate-200">Nombre</th>
                         <th class="px-5 py-3 border-b-2 border-slate-200">Usuario</th>
+                        <th class="px-5 py-3 border-b-2 border-slate-200">Rol</th>
                         <th class="px-5 py-3 border-b-2 border-slate-200 text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -60,11 +73,20 @@
                         <td class="px-5 py-4">{{ prof.id }}</td>
                         <td class="px-5 py-4 font-medium text-slate-900">{{ prof.nombre }}</td>
                         <td class="px-5 py-4 text-slate-600">{{ prof.usuario }}</td>
+                        <td class="px-5 py-4">
+                            <span class="px-2 py-1 rounded text-xs font-bold uppercase {% if prof.rol == 'admin' %}bg-purple-100 text-purple-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                                {{ prof.rol }}
+                            </span>
+                        </td>
                         <td class="px-5 py-4 text-center space-x-2">
-                            <button onclick="abrirModal('{{ prof.id }}', '{{ prof.nombre }}', '{{ prof.usuario }}', '{{ prof.password }}')" 
-                                    class="text-amber-600 hover:text-amber-900 font-semibold">Editar</button>
-                            <a href="/profesores/eliminar/{{ prof.id }}" onclick="return confirm('¿Seguro?')"
-                                class="text-red-600 hover:text-red-900 font-semibold">Eliminar</a>
+                            {% if session.get('rol') == 'admin' %}
+                                <button onclick="abrirModal('{{ prof.id }}', '{{ prof.nombre }}', '{{ prof.usuario }}', '{{ prof.rol }}')" 
+                                        class="text-amber-600 hover:text-amber-900 font-semibold">Editar</button>
+                                <a href="/profesores/eliminar/{{ prof.id }}" onclick="return confirm('¿Está seguro de eliminar este usuario?')"
+                                    class="text-red-600 hover:text-red-900 font-semibold">Eliminar</a>
+                            {% else %}
+                                <span class="text-slate-400 text-xs italic">Sin permisos</span>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -76,8 +98,8 @@
 
 <div id="modalEditar" class="fixed inset-0 bg-slate-900 bg-opacity-50 hidden flex items-center justify-center z-50">
     <div class="bg-white p-6 rounded-lg shadow-xl w-96">
-        <h2 class="text-xl font-bold mb-4 text-slate-800">Modificar Profesor</h2>
-        <form id="formEditar" action="" method="POST" onsubmit="return validarProfesor('edit_nombre', 'edit_usuario', 'edit_password')">
+        <h2 class="text-xl font-bold mb-4 text-slate-800">Modificar Usuario</h2>
+        <form id="formEditar" action="" method="POST" onsubmit="return validarEdicion()">
             <div class="mb-4">
                 <label class="block text-slate-700 text-sm font-semibold mb-1">Nombre Completo</label>
                 <input type="text" id="edit_nombre" name="nombre" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
@@ -87,8 +109,16 @@
                 <input type="text" id="edit_usuario" name="usuario" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
             </div>
             <div class="mb-4">
-                <label class="block text-slate-700 text-sm font-semibold mb-1">Contraseña</label>
-                <input type="password" id="edit_password" name="password" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Rol</label>
+                <select id="edit_rol" name="rol" class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
+                    <option value="profesor">profesor</option>
+                    <option value="admin">admin</option>
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-slate-700 text-sm font-semibold mb-1">Nueva Contraseña</label>
+                <input type="password" id="edit_password" name="password" placeholder="Dejar en blanco para mantener la actual" 
+                       class="w-full border rounded p-2 text-sm focus:outline-none focus:border-blue-500">
             </div>
             <div class="flex justify-end space-x-2 mt-6">
                 <button type="button" onclick="cerrarModal()" class="bg-slate-300 hover:bg-slate-400 text-slate-800 font-bold py-2 px-4 rounded text-sm transition">Cancelar</button>
@@ -99,11 +129,13 @@
 </div>
 
 <script>
-    function abrirModal(id, nombre, usuario, password) {
+    // PASAMOS EL ROL AL MODAL EN LUGAR DEL HASH DE CONTRASEÑA
+    function abrirModal(id, nombre, usuario, rol) {
         document.getElementById('formEditar').action = "/profesores/editar/" + id;
         document.getElementById('edit_nombre').value = nombre;
         document.getElementById('edit_usuario').value = usuario;
-        document.getElementById('edit_password').value = password;
+        document.getElementById('edit_rol').value = rol;
+        document.getElementById('edit_password').value = ""; // Nace limpio para no pisar el Hash
         document.getElementById('modalEditar').classList.remove('hidden');
     }
 
@@ -111,27 +143,27 @@
         document.getElementById('modalEditar').classList.add('hidden');
     }
 
-    function validarProfesor(idNombre, idUsuario, idPass) {
-        let nombre = document.getElementById(idNombre).value.trim();
-        let usuario = document.getElementById(idUsuario).value.trim();
-        let password = document.getElementById(idPass).value.trim();
-        if (!nombre || !usuario || !password) {
-            alert("Todos los campos son obligatorios.");
+    function validarEdicion() {
+        let nombre = document.getElementById('edit_nombre').value.trim();
+        let usuario = document.getElementById('edit_usuario').value.trim();
+        if (!nombre || !usuario) {
+            alert("El nombre y el usuario son campos obligatorios.");
             return false;
         }
         return true;
     }
 
-    // procesar el guardado de forma asincrona consumiendo la api rest
+    // Procesar el guardado incluyendo el campo ROL en la petición JSON
     async function guardarProfesorAsincrono(event) {
         if (event) event.preventDefault();
 
         let nombre = document.getElementById('nombre').value.trim();
         let usuario = document.getElementById('usuario').value.trim();
         let password = document.getElementById('password').value.trim();
+        let rol = document.getElementById('rol').value;
 
         if (!nombre || !usuario || !password) {
-            alert("Todos los campos son obligatorios.");
+            alert("Todos los campos obligatorios para el registro inicial.");
             return false;
         }
 
@@ -139,7 +171,7 @@
             let response = await fetch('/api/profesores/crear', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ nombre: nombre, usuario: usuario, password: password })
+                body: JSON.stringify({ nombre: nombre, usuario: usuario, password: password, rol: rol })
             });
 
             let result = await response.json();
@@ -153,7 +185,7 @@
             window.location.reload();
 
         } catch (error) {
-            alert("error de red al intentar conectar con la api rest.");
+            alert("Error de red al intentar conectar con la API REST.");
         }
         return false;
     }

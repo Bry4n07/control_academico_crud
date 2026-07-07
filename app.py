@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, flash, session
+from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 import random
 
@@ -17,37 +18,95 @@ def get_db_connection():
 @app.route('/')
 def index():
     if 'user_id' in session:
+        if session.get('rol') == 'estudiante':
+            return redirect(url_for('portal_estudiante'))
         return redirect(url_for('dashboard'))
     return render_template('colegio.html')
 
-# Login
+# Login Inteligente (Soporta Administradores, Profesores y Estudiantes)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        usuario = request.form['usuario']
-        password = request.form['password']
+        usuario_input = request.form.get('usuario', '').strip()
+        password_input = request.form.get('password', '').strip()
         
         conn = get_db_connection()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM profesores WHERE usuario = %s AND password = %s", (usuario, password))
-        user = cursor.fetchone()
-        cursor.close()
-        conn.close()
         
-        if user:
+        # 1. Intentar buscar primero en la tabla de Profesores (Admin / Profesor)
+        cursor.execute("SELECT * FROM profesores WHERE usuario = %s", (usuario_input,))
+        user = cursor.fetchone()
+        
+        if user and check_password_hash(user['password'], password_input):
             session['user_id'] = user['id']
             session['user_name'] = user['nombre']
+            session['rol'] = user['rol']  # Guarda si es 'admin' o 'profesor'
+            cursor.close()
+            conn.close()
             return redirect(url_for('dashboard'))
-        else:
-            flash('Usuario o contraseña incorrectos', 'error')
-            return redirect(url_for('login'))
             
+        # 2. Si no es profesor, buscar en la tabla de Estudiantes (por número de Carnet)
+        cursor.execute("SELECT * FROM estudiantes WHERE carnet = %s", (usuario_input,))
+        estudiante = cursor.fetchone()
+        
+        if estudiante and check_password_hash(estudiante['password'], password_input):
+            session['user_id'] = estudiante['id']
+            session['user_name'] = estudiante['nombre']
+            session['rol'] = 'estudiante'  # Rol automático para el alumno
+            session['grado_id'] = estudiante['grado_id']  # Útil para mapear sus cursos físicos
+            cursor.close()
+            conn.close()
+            return redirect(url_for('portal_estudiante'))
+            
+        # Si las credenciales fallan por completo
+        cursor.close()
+        conn.close()
+        flash('Usuario, carné o contraseña incorrectos', 'error')
+        return redirect(url_for('login'))
+        
     return render_template('login.html')
 
-# Dashboard
+# Portal del Estudiante (Exclusivo de Solo Lectura para Alumnos)
+@app.route('/portal-estudiante')
+def portal_estudiante():
+    if 'user_id' not in session or session.get('rol') != 'estudiante':
+        return redirect(url_for('login'))
+        
+    estudiante_id = session['user_id']
+    grado_id = session['grado_id']
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    # 1. Obtener los datos del alumno y su salón físico asignado
+    cursor.execute("""
+        SELECT e.*, g.nombre_grado, g.seccion 
+        FROM estudiantes e 
+        JOIN grados g ON e.grado_id = g.id 
+        WHERE e.id = %s
+    """, (estudiante_id,))
+    perfil = cursor.fetchone()
+    
+    # 2. Obtener el historial completo de notas registradas del alumno
+    cursor.execute("""
+        SELECT m.nombre_materia, c.semestre, c.nota
+        FROM asignaciones a
+        JOIN materias m ON a.materia_id = m.id
+        LEFT JOIN calificaciones c ON c.asignacion_id = a.id AND c.estudiante_id = %s
+        WHERE a.grado_id = %s
+        ORDER BY m.nombre_materia, c.semestre
+    """, (estudiante_id, grado_id))
+    historial_notas = cursor.fetchall()
+    
+    cursor.close()
+    conn.close()
+    
+    return render_template('portal_estudiante.html', perfil=perfil, notas=historial_notas)
+
+# Dashboard Global Administrativo
 @app.route('/dashboard')
 def dashboard():
-    if 'user_id' not in session:
+    if 'user_id' not in session or session.get('rol') == 'estudiante':
         return redirect(url_for('login'))
     return render_template('dashboard.html')
 
@@ -55,16 +114,22 @@ def dashboard():
 
 @app.route('/profesores', methods=['GET'])
 def profesores():
-    if 'user_id' not in session: return redirect(url_for('login'))
-    conn = get_db_connection(); cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT id, nombre, usuario, password FROM profesores ORDER BY id DESC")
+    if 'user_id' not in session or session.get('rol') == 'estudiante': 
+        return redirect(url_for('login'))
+        
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    # Traemos también el campo 'rol' para renderizar las etiquetas en la tabla
+    cursor.execute("SELECT id, nombre, usuario, rol FROM profesores ORDER BY id DESC")
     lista_profesores = cursor.fetchall()
     cursor.close(); conn.close()
     return render_template('profesores.html', profesores=lista_profesores)
 
 @app.route('/cursos_estudiantes', methods=['GET'])
 def cursos_estudiantes():
-    if 'user_id' not in session: return redirect(url_for('login'))
+    if 'user_id' not in session or session.get('rol') == 'estudiante': 
+        return redirect(url_for('login'))
+        
     profesor_logueado = session['user_id']
     conn = get_db_connection(); cursor = conn.cursor(dictionary=True)
     
@@ -74,14 +139,24 @@ def cursos_estudiantes():
     cursor.execute("SELECT id, nombre_materia FROM materias ORDER BY nombre_materia")
     all_materias = cursor.fetchall()
     
-    cursor.execute("""
-        SELECT a.id, m.nombre_materia as curso_nombre, g.nombre_grado, g.seccion 
-        FROM asignaciones a
-        JOIN materias m ON a.materia_id = m.id
-        JOIN grados g ON a.grado_id = g.id
-        WHERE a.profesor_id = %s
-        ORDER BY g.nombre_grado, m.nombre_materia
-    """, (profesor_logueado,))
+    # Si es admin ve todas las asignaciones, si es profesor normal ve solo las suyas
+    if session.get('rol') == 'admin':
+        cursor.execute("""
+            SELECT a.id, m.nombre_materia as curso_nombre, g.nombre_grado, g.seccion 
+            FROM asignaciones a
+            JOIN materias m ON a.materia_id = m.id
+            JOIN grados g ON a.grado_id = g.id
+            ORDER BY g.nombre_grado, m.nombre_materia
+        """)
+    else:
+        cursor.execute("""
+            SELECT a.id, m.nombre_materia as curso_nombre, g.nombre_grado, g.seccion 
+            FROM asignaciones a
+            JOIN materias m ON a.materia_id = m.id
+            JOIN grados g ON a.grado_id = g.id
+            WHERE a.profesor_id = %s
+            ORDER BY g.nombre_grado, m.nombre_materia
+        """, (profesor_logueado,))
     all_cursos = cursor.fetchall()
     
     cursor.execute("""
@@ -96,38 +171,58 @@ def cursos_estudiantes():
 
 @app.route('/calificaciones', methods=['GET'])
 def calificaciones():
-    if 'user_id' not in session: return redirect(url_for('login'))
+    if 'user_id' not in session or session.get('rol') == 'estudiante': 
+        return redirect(url_for('login'))
+        
     profesor_logueado = session['user_id']
     conn = get_db_connection(); cursor = conn.cursor(dictionary=True)
     
-    cursor.execute("""
-        SELECT a.id as asignacion_id, m.nombre_materia, g.nombre_grado, g.seccion 
-        FROM asignaciones a
-        JOIN materias m ON a.materia_id = m.id
-        JOIN grados g ON a.grado_id = g.id
-        WHERE a.profesor_id = %s
-    """, (profesor_logueado,))
-    mis_asignaciones = cursor.fetchall()
-    
-    cursor.execute("""
-        SELECT c.id, e.nombre as estudiante_nombre, e.carnet, m.nombre_materia, g.nombre_grado, g.seccion, c.semestre, c.nota, c.estudiante_id, c.asignacion_id
-        FROM calificaciones c
-        JOIN estudiantes e ON c.estudiante_id = e.id
-        JOIN asignaciones a ON c.asignacion_id = a.id
-        JOIN materias m ON a.materia_id = m.id
-        JOIN grados g ON a.grado_id = g.id
-        WHERE a.profesor_id = %s
-        ORDER BY e.nombre, c.semestre
-    """, (profesor_logueado,))
+    # Los profesores filtran solo sus cursos asignados, el admin puede ver y gestionar todas
+    if session.get('rol') == 'admin':
+        cursor.execute("""
+            SELECT a.id as asignacion_id, m.nombre_materia, g.nombre_grado, g.seccion 
+            FROM asignaciones a
+            JOIN materias m ON a.materia_id = m.id
+            JOIN grados g ON a.grado_id = g.id
+        """)
+        cursor.execute("""
+            SELECT c.id, e.nombre as estudiante_nombre, e.carnet, m.nombre_materia, g.nombre_grado, g.seccion, c.semestre, c.nota, c.estudiante_id, c.asignacion_id
+            FROM calificaciones c
+            JOIN estudiantes e ON c.estudiante_id = e.id
+            JOIN asignaciones a ON c.asignacion_id = a.id
+            JOIN materias m ON a.materia_id = m.id
+            JOIN grados g ON a.grado_id = g.id
+            ORDER BY e.nombre, c.semestre
+        """)
+    else:
+        cursor.execute("""
+            SELECT a.id as asignacion_id, m.nombre_materia, g.nombre_grado, g.seccion 
+            FROM asignaciones a
+            JOIN materias m ON a.materia_id = m.id
+            JOIN grados g ON a.grado_id = g.id
+            WHERE a.profesor_id = %s
+        """, (profesor_logueado,))
+        mis_asignaciones = cursor.fetchall()
+        
+        cursor.execute("""
+            SELECT c.id, e.nombre as estudiante_nombre, e.carnet, m.nombre_materia, g.nombre_grado, g.seccion, c.semestre, c.nota, c.estudiante_id, c.asignacion_id
+            FROM calificaciones c
+            JOIN estudiantes e ON c.estudiante_id = e.id
+            JOIN asignaciones a ON c.asignacion_id = a.id
+            JOIN materias m ON a.materia_id = m.id
+            JOIN grados g ON a.grado_id = g.id
+            WHERE a.profesor_id = %s
+            ORDER BY e.nombre, c.semestre
+        """, (profesor_logueado,))
     all_calificaciones = cursor.fetchall()
     cursor.close(); conn.close()
-    return render_template('calificaciones.html', asignaciones=mis_asignaciones, calificaciones=all_calificaciones)
+    return render_template('calificaciones.html', asignaciones=mis_asignaciones if session.get('rol') != 'admin' else mis_asignaciones, calificaciones=all_calificaciones)
 
 # --- ENDPOINTS DE LA API REST (JSON ASÍNCRONOS) ---
 
 @app.route('/api/materias/crear', methods=['POST'])
 def api_crear_materia():
-    if 'user_id' not in session: return jsonify({'error': 'no autorizado'}), 401
+    if 'user_id' not in session or session.get('rol') == 'estudiante': return jsonify({'error': 'no autorizado'}), 401
     data = request.get_json()
     nombre = data.get('nombre_materia', '').strip()
     if not nombre: return jsonify({'error': 'el nombre de la materia es requerido.'}), 400
@@ -141,7 +236,7 @@ def api_crear_materia():
 
 @app.route('/api/grados/crear', methods=['POST'])
 def api_crear_grado():
-    if 'user_id' not in session: return jsonify({'error': 'no autorizado'}), 401
+    if 'user_id' not in session or session.get('rol') == 'estudiante': return jsonify({'error': 'no autorizado'}), 401
     data = request.get_json()
     nombre = data.get('nombre_grado', '').strip()
     seccion = data.get('seccion', '').strip().upper()
@@ -154,32 +249,54 @@ def api_crear_grado():
     except mysql.connector.Error: return jsonify({'error': 'esta seccion de grado ya existe.'}), 400
     finally: cursor.close(); conn.close()
 
+# API de creación de Personal Académico blindada con Hasheo y Roles de Seguridad
 @app.route('/api/profesores/crear', methods=['POST'])
 def api_crear_profesor():
-    if 'user_id' not in session: return jsonify({'error': 'no autorizado'}), 401
+    if 'user_id' not in session or session.get('rol') != 'admin': 
+        return jsonify({'error': 'No autorizado. Solo administradores globales pueden registrar personal.'}), 401
+        
     data = request.get_json()
-    nombre, usuario, password = data.get('nombre', '').strip(), data.get('usuario', '').strip(), data.get('password', '').strip()
-    if not nombre or not usuario or not password: return jsonify({'error': 'datos incompletos.'}), 400
+    nombre = data.get('nombre', '').strip()
+    usuario = data.get('usuario', '').strip()
+    password = data.get('password', '').strip()
+    rol = data.get('rol', 'profesor').strip() # Captura si nace como admin o profesor
+    
+    if not nombre or not usuario or not password: 
+        return jsonify({'error': 'Datos obligatorios incompletos.'}), 400
+        
+    # ENCRIPTAMOS LA CONTRASEÑA EN UN HASH IRREVERSIBLE
+    password_hash = generate_password_hash(password)
+    
     conn = get_db_connection(); cursor = conn.cursor()
     try:
-        cursor.execute("INSERT INTO profesores (nombre, usuario, password) VALUES (%s, %s, %s)", (nombre, usuario, password))
+        cursor.execute("""
+            INSERT INTO profesores (nombre, usuario, password, rol) 
+            VALUES (%s, %s, %s, %s)
+        """, (nombre, usuario, password_hash, rol))
         conn.commit()
-        return jsonify({'success': 'profesor creado exitosamente'})
-    except mysql.connector.Error: return jsonify({'error': 'el usuario ya existe.'}), 400
-    finally: cursor.close(); conn.close()
+        return jsonify({'success': 'Usuario académico registrado exitosamente con contraseñas encriptadas.'})
+    except mysql.connector.Error: 
+        return jsonify({'error': 'El nombre de usuario ya se encuentra registrado.'}), 400
+    finally: 
+        cursor.close(); conn.close()
 
 @app.route('/api/cursos/crear', methods=['POST'])
 def api_crear_curso():
-    if 'user_id' not in session: return jsonify({'error': 'no autorizado'}), 401
+    if 'user_id' not in session or session.get('rol') == 'estudiante': return jsonify({'error': 'no autorizado'}), 401
     profesor_id = session['user_id']
     data = request.get_json()
     materia_id, grado_id = data.get('materia_id'), data.get('grado_id')
     if not materia_id or not grado_id: return jsonify({'error': 'datos incompletos.'}), 400
+    
     conn = get_db_connection(); cursor = conn.cursor(dictionary=True)
-    cursor.execute("SELECT COUNT(*) as total FROM asignaciones WHERE profesor_id = %s", (profesor_id,))
-    if cursor.fetchone()['total'] >= 2:
-        cursor.close(); conn.close()
-        return jsonify({'error': 'has alcanzado el limite maximo de 2 cursos.'}), 400
+    
+    # Si es profesor normal, validamos el estricto límite de 2 cursos de la certificación
+    if session.get('rol') != 'admin':
+        cursor.execute("SELECT COUNT(*) as total FROM asignaciones WHERE profesor_id = %s", (profesor_id,))
+        if cursor.fetchone()['total'] >= 2:
+            cursor.close(); conn.close()
+            return jsonify({'error': 'has alcanzado el limite maximo de 2 cursos.'}), 400
+            
     try:
         cursor.execute("INSERT INTO asignaciones (profesor_id, materia_id, grado_id) VALUES (%s, %s, %s)", (profesor_id, materia_id, grado_id))
         conn.commit()
@@ -187,9 +304,12 @@ def api_crear_curso():
     except mysql.connector.Error: return jsonify({'error': 'esta asignacion ya pertenece a un catedratico.'}), 400
     finally: cursor.close(); conn.close()
 
+# API de estudiantes con generación segura de contraseña inicial por número de Carnet
 @app.route('/api/estudiantes/crear', methods=['POST'])
 def api_crear_student():
-    if 'user_id' not in session: return jsonify({'error': 'no authorized'}), 401
+    if 'user_id' not in session or session.get('rol') == 'estudiante': 
+        return jsonify({'error': 'No autorizado'}), 401
+        
     data = request.get_json()
     carnet = data.get('carnet', '').strip()
     nombre = data.get('nombre', '').strip()
@@ -199,25 +319,32 @@ def api_crear_student():
     grado_id = data.get('grado_id')
     
     if not nombre or not grado_id:
-        return jsonify({'error': 'el nombre y el grado son campos obligatorios.'}), 400
+        return jsonify({'error': 'El nombre y el grado son campos obligatorios.'}), 400
         
     if not carnet:
         carnet = f"2026-{random.randint(1000, 9999)}"
         
+    # ENCRIPTAMOS EL NÚMERO DE CARNET PARA USARLO COMO CONTRASEÑA INICIAL
+    password_inicial = generate_password_hash(carnet)
+        
     conn = get_db_connection(); cursor = conn.cursor()
     try:
         cursor.execute("""
-            INSERT INTO estudiantes (carnet, nombre, correo, telefono, fecha_nacimiento, grado_id) 
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (carnet, nombre, correo if correo else 'Sin Correo', telefono if telefono else None, fecha_nacimiento if fecha_nacimiento else None, grado_id))
+            INSERT INTO estudiantes (carnet, nombre, correo, telefono, fecha_nacimiento, grado_id, password) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
+        """, (carnet, nombre, correo if correo else 'Sin Correo', 
+              telefono if telefono else None, fecha_nacimiento if fecha_nacimiento else None, 
+              grado_id, password_inicial))
         conn.commit()
-        return jsonify({'success': f'estudiante matriculado exitosamente con el carnet: {carnet}'})
-    except mysql.connector.Error: return jsonify({'error': 'el numero de carnet ya se encuentra registrado.'}), 400
-    finally: cursor.close(); conn.close()
+        return jsonify({'success': f'Estudiante matriculado exitosamente. Su contraseña inicial es su carné: {carnet}'})
+    except mysql.connector.Error: 
+        return jsonify({'error': 'El número de carné ya se encuentra registrado.'}), 400
+    finally: 
+        cursor.close(); conn.close()
 
 @app.route('/api/asignaciones/<int:id>/estudiantes', methods=['GET'])
 def api_estudiantes_por_asignacion(id):
-    if 'user_id' not in session: return jsonify({'error': 'no autorizado'}), 401
+    if 'user_id' not in session or session.get('rol') == 'estudiante': return jsonify({'error': 'no autorizado'}), 401
     conn = get_db_connection(); cursor = conn.cursor(dictionary=True)
     cursor.execute("SELECT grado_id FROM asignaciones WHERE id = %s", (id,))
     asig = cursor.fetchone()
@@ -229,7 +356,7 @@ def api_estudiantes_por_asignacion(id):
 
 @app.route('/api/calificaciones/crear', methods=['POST'])
 def api_crear_calificacion():
-    if 'user_id' not in session: return jsonify({'error': 'no autorizado'}), 401
+    if 'user_id' not in session or session.get('rol') == 'estudiante': return jsonify({'error': 'no autorizado'}), 401
     data = request.get_json()
     estudiante_id, asignacion_id, semestre, nota = data.get('estudiante_id'), data.get('asignacion_id'), data.get('semestre'), data.get('nota')
     if not estudiante_id or not asignacion_id or not semestre or nota is None: return jsonify({'error': 'datos incompletos'}), 400
@@ -253,21 +380,40 @@ def api_crear_calificacion():
 
 # --- ENDPOINTS TRADICIONALES DE MODIFICACIÓN Y ELIMINACIÓN ---
 
+# Edición tradicional controlando de forma segura los cambios en contraseñas sin pisar hashes vigentes
 @app.route('/profesores/editar/<int:id>', methods=['POST'])
 def editar_profesor(id):
-    if 'user_id' not in session: return redirect(url_for('login'))
-    nombre, usuario, password = request.form['nombre'].strip(), request.form['usuario'].strip(), request.form['password'].strip()
+    if 'user_id' not in session or session.get('rol') != 'admin': 
+        return redirect(url_for('login'))
+        
+    nombre = request.form['nombre'].strip()
+    usuario = request.form['usuario'].strip()
+    password = request.form['password'].strip()
+    rol = request.form['rol'].strip()
+    
     conn = get_db_connection(); cursor = conn.cursor()
     try:
-        cursor.execute("UPDATE profesores SET nombre = %s, usuario = %s, password = %s WHERE id = %s", (nombre, usuario, password, id))
+        if password:
+            # Si escribieron una nueva clave, se hashea
+            password_hash = generate_password_hash(password)
+            cursor.execute("""
+                UPDATE profesores SET nombre = %s, usuario = %s, password = %s, rol = %s WHERE id = %s
+            """, (nombre, usuario, password_hash, rol, id))
+        else:
+            # Si se dejó en blanco, se ignoran los campos de clave en el UPDATE
+            cursor.execute("""
+                UPDATE profesores SET nombre = %s, usuario = %s, rol = %s WHERE id = %s
+            """, (nombre, usuario, rol, id))
         conn.commit()
-    except mysql.connector.Error: flash('Error: Usuario ya existente.', 'error')
-    cursor.close(); conn.close()
+    except mysql.connector.Error: 
+        flash('Error: Usuario ya existente.', 'error')
+    finally:
+        cursor.close(); conn.close()
     return redirect(url_for('profesores'))
 
 @app.route('/estudiantes/editar/<int:id>', methods=['POST'])
 def editar_estudiante(id):
-    if 'user_id' not in session: return redirect(url_for('login'))
+    if 'user_id' not in session or session.get('rol') == 'estudiante': return redirect(url_for('login'))
     nombre = request.form['nombre_estudiante'].strip()
     correo = request.form['correo_estudiante'].strip()
     telefono = request.form['telefono_estudiante'].strip()
@@ -283,17 +429,17 @@ def editar_estudiante(id):
 
 @app.route('/profesores/eliminar/<int:id>')
 def eliminar_profesor(id):
-    if 'user_id' not in session: return redirect(url_for('login'))
+    if 'user_id' not in session or session.get('rol') != 'admin': return redirect(url_for('login'))
     if id == session['user_id']: return redirect(url_for('profesores'))
     conn = get_db_connection(); cursor = conn.cursor()
     try: cursor.execute("DELETE FROM profesores WHERE id = %s", (id,)); conn.commit()
-    except mysql.connector.Error: flash('Error: El profesor imparte materias activas.', 'error')
+    except mysql.connector.Error: flash('Error: El profesor imparte materias activas o salones vigentes.', 'error')
     cursor.close(); conn.close()
     return redirect(url_for('profesores'))
 
 @app.route('/cursos/eliminar/<int:id>')
 def eliminar_curso(id):
-    if 'user_id' not in session: return redirect(url_for('login'))
+    if 'user_id' not in session or session.get('rol') == 'estudiante': return redirect(url_for('login'))
     conn = get_db_connection(); cursor = conn.cursor()
     cursor.execute("DELETE FROM asignaciones WHERE id = %s", (id,)); conn.commit()
     cursor.close(); conn.close()
@@ -301,7 +447,7 @@ def eliminar_curso(id):
 
 @app.route('/estudiantes/eliminar/<int:id>')
 def eliminar_estudiante(id):
-    if 'user_id' not in session: return redirect(url_for('login'))
+    if 'user_id' not in session or session.get('rol') == 'estudiante': return redirect(url_for('login'))
     conn = get_db_connection(); cursor = conn.cursor()
     cursor.execute("DELETE FROM estudiantes WHERE id = %s", (id,)); conn.commit()
     cursor.close(); conn.close()
@@ -309,7 +455,7 @@ def eliminar_estudiante(id):
 
 @app.route('/calificaciones/editar/<int:id>', methods=['POST'])
 def editar_calificacion(id):
-    if 'user_id' not in session: return redirect(url_for('login'))
+    if 'user_id' not in session or session.get('rol') == 'estudiante': return redirect(url_for('login'))
     try:
         nota = int(request.form['nota'])
         if 0 <= nota <= 100:
@@ -321,7 +467,7 @@ def editar_calificacion(id):
 
 @app.route('/calificaciones/eliminar/<int:id>')
 def eliminar_calificacion(id):
-    if 'user_id' not in session: return redirect(url_for('login'))
+    if 'user_id' not in session or session.get('rol') == 'estudiante': return redirect(url_for('login'))
     conn = get_db_connection(); cursor = conn.cursor()
     cursor.execute("DELETE FROM calificaciones WHERE id = %s", (id,)); conn.commit()
     cursor.close(); conn.close()
@@ -331,6 +477,34 @@ def eliminar_calificacion(id):
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
+# --- SCRIPT AUTOMÁTICO DE POBLADO SEGURO DE USUARIOS ---
+@app.route('/crear-usuarios-prueba')
+def crear_usuarios_prueba():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    pass_admin = generate_password_hash("Admin123")
+    pass_profe = generate_password_hash("Pass1")
+    
+    try:
+        cursor.execute("""
+            INSERT INTO profesores (nombre, usuario, password, rol) 
+            VALUES ('Administrador General', 'admin', %s, 'admin')
+        """, (pass_admin,))
+        
+        cursor.execute("""
+            INSERT INTO profesores (nombre, usuario, password, rol) 
+            VALUES ('Profesor de Prueba 1', 'Profe1', %s, 'profesor')
+        """, (pass_profe,))
+        
+        conn.commit()
+        return "Usuarios de prueba creados exitosamente en la base de datos."
+    except Exception as e:
+        return f"Nota: Los usuarios ya existen o la base de datos tiró este mensaje: {e}"
+    finally:
+        cursor.close()
+        conn.close()
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
