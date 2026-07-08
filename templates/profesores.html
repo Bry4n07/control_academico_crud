@@ -204,9 +204,6 @@
 </div>
 
 <script>
-    /* ==========================================
-       VALIDACIONES FRONT-END REUTILIZABLES
-       ========================================== */
     const RegexValidaciones = {
         // Solo letras y espacios, mín 3 caracteres
         nombre: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]{3,60}$/,
@@ -242,9 +239,7 @@
         }
     });
 
-    /* ==========================================
-       FLUJO DE CREACIÓN
-       ========================================== */
+    /* Flujo de Creación */
     async function validarYGuardarCreacion(event) {
         if (event) event.preventDefault();
         let valido = true;
@@ -265,8 +260,8 @@
             valido = false;
         }
         // Validar Password
-        if (password.length < 6) {
-            mostrarErrorInput('password', 'errorPassword', 'La contraseña debe tener al menos 6 caracteres.');
+        if (password.length < 5) {
+            mostrarErrorInput('password', 'errorPassword', 'La contraseña debe tener al menos 5 caracteres.');
             valido = false;
         }
 
@@ -282,7 +277,7 @@
             let result = await response.json();
             
             if (!response.ok) {
-                mostrarToast(result.error, 'error'); // Función que ya tenías globalmente
+                mostrarToast(result.error, 'error');
                 return false;
             }
             mostrarToast(result.success, 'success');
@@ -292,9 +287,7 @@
         }
     }
 
-    /* ==========================================
-       GESTIÓN DEL MODAL Y EDICIÓN
-       ========================================== */
+    /* Gestion del modal y Edición */
     const modal = document.getElementById('modalEditar');
     const modalCard = document.getElementById('modalCard');
 
@@ -348,8 +341,8 @@
             valido = false;
         }
         // Validar Password (Solo si escribió algo)
-        if (password.length > 0 && password.length < 6) {
-            mostrarErrorInput('edit_password', 'errorEditPassword', 'Si la cambias, debe tener mínimo 6 caracteres.');
+        if (password.length > 0 && password.length < 5) {
+            mostrarErrorInput('edit_password', 'errorEditPassword', 'Si la cambias, debe tener mínimo 5 caracteres.');
             valido = false;
         }
 

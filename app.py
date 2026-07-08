@@ -1,11 +1,13 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
+import os
 import random
 
 app = Flask(__name__)
 app.secret_key = 'clave_secreta_certificacion'
 
+""""
 def get_db_connection():
     return mysql.connector.connect(
         host="localhost",
@@ -13,7 +15,17 @@ def get_db_connection():
         password="",
         database="control_colegio"
     )
+"""
+def get_db_connection():
+    return mysql.connector.connect(
+        host="mysql-255ba0d4-schoolu.c.aivencloud.com",
+        port=19450,
+        user="avnadmin",
+        password="DB_PASSWORD",
+        database="defaultdb"
 
+    )
+    
 @app.route('/')
 def index():
     if 'user_id' in session:
@@ -96,27 +108,27 @@ def dashboard():
     conn = get_db_connection()
     cursor = conn.cursor(dictionary=True)
     
-    # 1. Obtener total de profesores
+    # Obtener total de profesores
     cursor.execute("SELECT COUNT(*) as total FROM profesores")
     total_profesores = cursor.fetchone()['total']
     
     # Lógica condicional: El Admin ve todo, el Profesor ve solo sus métricas
     if session.get('rol') == 'admin':
-        # 2. Total de cursos activos (todas las asignaciones)
+        # Total de cursos activos (todas las asignaciones)
         cursor.execute("SELECT COUNT(*) as total FROM asignaciones")
         total_cursos = cursor.fetchone()['total']
         
-        # 3. Total de notas registradas globales
+        # Total de notas registradas globales
         cursor.execute("SELECT COUNT(*) as total FROM calificaciones")
         total_notas = cursor.fetchone()['total']
     else:
         profesor_id = session['user_id']
         
-        # 2. Total de cursos asignados al profesor logueado
+        # Total de cursos asignados al profesor logueado
         cursor.execute("SELECT COUNT(*) as total FROM asignaciones WHERE profesor_id = %s", (profesor_id,))
         total_cursos = cursor.fetchone()['total']
         
-        # 3. Total de notas registradas por este profesor
+        # Total de notas registradas por este profesor
         cursor.execute("""
             SELECT COUNT(c.id) as total 
             FROM calificaciones c
@@ -232,7 +244,7 @@ def calificaciones():
     cursor.close(); conn.close()
     return render_template('calificaciones.html', asignaciones=mis_asignaciones, calificaciones=all_calificaciones, estudiantes_globales=lista_alumnos_global)
 
-# --- ENDPOINTS REST TRANSFORMADOS COMPLETAMENTE A ASÍNCRONOS (RETORNAN JSON PARA TOASTS) ---
+# ENDPOINTS REST Transformados Completamaeneto asicnronos 
 
 @app.route('/api/materias/crear', methods=['POST'])
 def api_crear_materia():

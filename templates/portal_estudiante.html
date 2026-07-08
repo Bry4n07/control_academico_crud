@@ -107,7 +107,7 @@
         // Obtenemos los datos pasados desde Jinja2
         const notasData = {{ notas | tojson | safe }};
         
-        // 1. Lógica para calcular Promedio y Estadísticas
+        // Lógica para calcular Promedio y Estadísticas
         const calcularEstadisticas = () => {
             const elPromedio = document.getElementById('promedioGeneral');
             const elAprobados = document.getElementById('cursosAprobados');

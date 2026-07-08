@@ -192,7 +192,7 @@
 </div>
 
 <script>
-    // FUNCIONES ASÍNCRONAS DE API
+    //  Funciones Asincronas de API 
     function abrirModalNota(id, alumno, nota) {
         document.getElementById('edit_calificacion_id').value = id;
         document.getElementById('lbl_estudiante').innerText = alumno;
@@ -232,9 +232,7 @@
         } catch { mostrarToast("Error de red.", 'error'); }
     }
 
-    // =================================================================
-    // NUEVA FUNCIÓN DE ELIMINACIÓN (Usando el modal reutilizable)
-    // =================================================================
+    //  ELIMINACIÓN (Usando el modal reutilizable)
     function eliminarCalificacionAsincrona(id) {
         abrirModalConfirmacion(
             "Eliminar Calificación",
@@ -371,7 +369,7 @@
         renderizarTabla();
     });
 
-    // NUEVA FUNCIÓN: Ocultar/mostrar secciones y rotar el ícono
+    // Ocultar/mostrar secciones y rotar el ícono
     function toggleVisibilidad(idContenedor, idIcono) {
         const contenedor = document.getElementById(idContenedor);
         const icono = document.getElementById(idIcono);
