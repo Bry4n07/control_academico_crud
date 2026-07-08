@@ -24,7 +24,7 @@
             </button>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             <div class="bg-white rounded-2xl shadow-sm border border-[#E3E8EE] overflow-hidden transition-all">
                 <button onclick="toggleAcordeon('sec-materias', 'icon-mat')" class="w-full flex justify-between items-center p-5 bg-white hover:bg-[#F4F8FB]/50 transition-colors border-b border-[#E3E8EE]">
@@ -37,8 +37,8 @@
                 </button>
                 <div id="sec-materias" class="hidden p-5 border-t border-gray-50 bg-[#FFFFFF]">
                     <div class="overflow-x-auto rounded-xl border border-[#E3E8EE]">
-                        <table class="min-w-full text-xs border-collapse block md:table">
-                            <thead class="hidden md:table-header-group">
+                        <table class="min-w-full text-xs border-collapse">
+                            <thead>
                                 <tr class="bg-[#F4F8FB] text-[#5F6C7B] text-left uppercase text-[10px] font-bold tracking-wider border-b border-[#E3E8EE]">
                                     <th class="py-3 px-4">ID</th>
                                     <th class="py-3 px-4">Nombre de la Materia</th>
@@ -46,7 +46,7 @@
                                     <th class="py-3 px-4 text-center">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-materias" class="block md:table-row-group divide-y divide-[#E3E8EE]"></tbody>
+                            <tbody id="tbody-materias" class="divide-y divide-[#E3E8EE]"></tbody>
                         </table>
                     </div>
                     <div id="paginacion-materias" class="mt-3"></div>
@@ -64,8 +64,8 @@
                 </button>
                 <div id="sec-cursos" class="hidden p-5 border-t border-gray-50 bg-[#FFFFFF]">
                     <div class="overflow-x-auto rounded-xl border border-[#E3E8EE]">
-                        <table class="min-w-full text-xs border-collapse block md:table">
-                            <thead class="hidden md:table-header-group">
+                        <table class="min-w-full text-xs border-collapse">
+                            <thead>
                                 <tr class="bg-[#F4F8FB] text-[#5F6C7B] text-left uppercase text-[10px] font-bold tracking-wider border-b border-[#E3E8EE]">
                                     <th class="py-3 px-4">ID</th>
                                     <th class="py-3 px-4">Nombre del Curso</th>
@@ -74,7 +74,7 @@
                                     <th class="py-3 px-4 text-center">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="tbody-cursos" class="block md:table-row-group divide-y divide-[#E3E8EE]"></tbody>
+                            <tbody id="tbody-cursos" class="divide-y divide-[#E3E8EE]"></tbody>
                         </table>
                     </div>
                     <div id="paginacion-cursos" class="mt-3"></div>
@@ -83,7 +83,7 @@
 
         </div>
 
-        <div class="bg-white p-4 sm:p-8 rounded-2xl shadow-sm border border-[#E3E8EE]">
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-[#E3E8EE]">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-[#E3E8EE] pb-5 mb-6 gap-2">
                 <div>
                     <h2 class="text-lg font-bold text-[#1F2D3A] flex items-center space-x-2">
@@ -95,20 +95,19 @@
                 <span id="badge-count-est" class="text-xs bg-[#7FC8D6]/15 text-[#2F6F8F] px-3 py-1 rounded-full font-bold">0 Alumnos</span>
             </div>
 
-            <div class="rounded-xl sm:border border-[#E3E8EE]">
-                <table class="w-full text-sm block md:table">
-                    <thead class="hidden md:table-header-group">
+            <div class="overflow-x-auto rounded-xl border border-[#E3E8EE]">
+                <table class="min-w-full text-sm border-collapse">
+                    <thead>
                         <tr class="bg-[#F4F8FB] text-[#5F6C7B] text-left uppercase text-xs font-bold tracking-wider border-b border-[#E3E8EE]">
                             <th class="py-4 px-6">Carné / Alumno</th>
                             <th class="py-4 px-6">Contacto Institucional</th>
                             <th class="py-4 px-6 text-center">Acciones de Expediente</th>
                         </tr>
                     </thead>
-                    <tbody id="tbody-estudiantes" class="block md:table-row-group">
-                        </tbody>
+                    <tbody id="tbody-estudiantes" class="divide-y divide-[#E3E8EE]"></tbody>
                 </table>
             </div>
-            <div id="paginacion-estudiantes" class="mt-6 flex justify-center w-full"></div>
+            <div id="paginacion-estudiantes" class="mt-4"></div>
         </div>
 
     </div>
@@ -116,44 +115,77 @@
 
 <div id="modalGlobal" class="fixed inset-0 bg-[#1F2D3A]/60 backdrop-blur-sm hidden flex items-center justify-center z-50 transition-all p-4">
     <div class="bg-[#FFFFFF] rounded-2xl shadow-xl w-full max-w-lg border border-[#E3E8EE] flex flex-col overflow-hidden transform scale-100 transition-transform">
+        
         <div class="bg-[#F4F8FB] border-b border-[#E3E8EE] px-6 py-4 flex justify-between items-center">
             <h3 class="font-bold text-[#1F2D3A] text-base">Consola de Registros Rápidos</h3>
             <button onclick="cerrarModalRegistroGlobal()" class="text-[#5F6C7B] hover:text-[#1F2D3A] p-1 rounded-lg hover:bg-gray-200/50 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
             </button>
         </div>
+
         <div class="flex border-b border-[#E3E8EE] bg-[#F4F8FB]/50 px-2 text-xs font-bold text-[#5F6C7B]">
             <button id="tab-estudiante" onclick="cambiarTabGlobal('estudiante')" class="flex-1 py-3 text-center border-b-2 border-transparent hover:text-[#1F2D3A] transition-all">Estudiante</button>
             <button id="tab-materia" onclick="cambiarTabGlobal('materia')" class="flex-1 py-3 text-center border-b-2 border-transparent hover:text-[#1F2D3A] transition-all">Materia</button>
             <button id="tab-curso" onclick="cambiarTabGlobal('curso')" class="flex-1 py-3 text-center border-b-2 border-transparent hover:text-[#1F2D3A] transition-all">Asignar Curso</button>
         </div>
+
         <div class="p-6 overflow-y-auto max-h-[75vh]">
+            
             <form id="form-tab-estudiante" onsubmit="return guardarEstudianteAsincrono(event)" class="hidden space-y-4">
-                <div><label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Nombre Completo</label><input type="text" id="nombre_estudiante" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]"></div>
-                <div><label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Carné (Opcional)</label><input type="text" id="carnet_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm placeholder-[#a0aec0] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]" placeholder="Autogenerado si vacío"></div>
-                <div><label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Correo Electrónico</label><input type="email" id="correo_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]"></div>
+                <div>
+                    <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Nombre Completo</label>
+                    <input type="text" id="nombre_estudiante" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]">
+                </div>
+                <div>
+                    <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Carné (Opcional)</label>
+                    <input type="text" id="carnet_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] placeholder-[#a0aec0] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]" placeholder="Autogenerado si vacío">
+                </div>
+                <div>
+                    <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Correo Electrónico</label>
+                    <input type="email" id="correo_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]">
+                </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Teléfono</label><input type="text" id="telefono_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]"></div>
-                    <div><label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Nacimiento</label><input type="date" id="nacimiento_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]"></div>
+                    <div>
+                        <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Teléfono</label>
+                        <input type="text" id="telefono_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]">
+                    </div>
+                    <div>
+                        <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Nacimiento</label>
+                        <input type="date" id="nacimiento_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]">
+                    </div>
                 </div>
                 <button type="submit" class="w-full mt-4 bg-[#2F6F8F] hover:bg-[#4A90A4] text-white font-bold py-2.5 rounded-lg text-xs tracking-wide transition-colors">PROCESAR MATRÍCULA</button>
             </form>
+
             <form id="form-tab-materia" onsubmit="return guardarMateriaAsincrona(event)" class="hidden space-y-4">
-                <div><label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Nombre de la Materia</label><input type="text" id="nombre_materia" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2.5 text-sm placeholder-[#a0aec0] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]" placeholder="Ej. Base de Datos II"></div>
-                <div><label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Semestre Asignado</label><input type="number" id="semestre_materia" min="1" max="12" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2.5 text-sm placeholder-[#a0aec0] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]" placeholder="Ej. 3"></div>
+                <div>
+                    <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Nombre de la Materia</label>
+                    <input type="text" id="nombre_materia" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2.5 text-sm text-[#1F2D3A] placeholder-[#a0aec0] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]" placeholder="Ej. Base de Datos II">
+                </div>
+                <div>
+                    <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Semestre Asignado</label>
+                    <input type="number" id="semestre_materia" min="1" max="12" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2.5 text-sm text-[#1F2D3A] placeholder-[#a0aec0] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]" placeholder="Ej. 3">
+                </div>
                 <button type="submit" class="w-full mt-4 bg-[#2F6F8F] hover:bg-[#4A90A4] text-white font-bold py-2.5 rounded-lg text-xs tracking-wide transition-colors">CREAR MATERIA EN SISTEMA</button>
             </form>
+
             <form id="form-tab-curso" onsubmit="return guardarCursoAsincrono(event)" class="hidden space-y-4">
                 <div>
                     <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Materia Base</label>
-                    <select id="materia_id" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF] cursor-pointer">
+                    <select id="materia_id" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2.5 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF] cursor-pointer">
                         <option value="">-- Selecciona una materia --</option>
-                        {% for mat in materias %} <option value="{{ mat.id }}">{{ mat.nombre_materia }} (Semestre {{ mat.semestre }})</option> {% endfor %}
+                        {% for mat in materias %}
+                            <option value="{{ mat.id }}">{{ mat.nombre_materia }} (Semestre {{ mat.semestre }})</option>
+                        {% endfor %}
                     </select>
                 </div>
-                <div><label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Sección / Aula</label><input type="text" id="seccion_curso" maxlength="3" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]" placeholder="Ej. B"></div>
+                <div>
+                    <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Sección / Aula</label>
+                    <input type="text" id="seccion_curso" maxlength="3" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2.5 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]" placeholder="Ej. B">
+                </div>
                 <button type="submit" class="w-full mt-4 bg-[#2F6F8F] hover:bg-[#4A90A4] text-white font-bold py-2.5 rounded-lg text-xs tracking-wide transition-colors">APERTURAR ASIGNACIÓN</button>
             </form>
+
         </div>
     </div>
 </div>
@@ -163,8 +195,14 @@
         <h2 class="text-base font-bold mb-4 text-[#1F2D3A]">Modificar Materia</h2>
         <form id="formEditarMateria" onsubmit="return guardarEdicionMateriaAsincrona(event)" class="space-y-4">
             <input type="hidden" id="edit_materia_id">
-            <div><label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Nombre de la Materia</label><input type="text" id="edit_nombre_materia" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2"></div>
-            <div><label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Semestre</label><input type="number" id="edit_semestre_materia" min="1" max="12" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2"></div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Nombre de la Materia</label>
+                <input type="text" id="edit_nombre_materia" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Semestre</label>
+                <input type="number" id="edit_semestre_materia" min="1" max="12" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2">
+            </div>
             <div class="flex justify-end space-x-2 pt-2">
                 <button type="button" onclick="document.getElementById('modalMateria').classList.add('hidden')" class="bg-[#F4F8FB] text-[#5F6C7B] px-4 py-2 rounded-lg text-xs font-medium">Cancelar</button>
                 <button type="submit" class="bg-[#2F6F8F] text-white px-4 py-2 rounded-lg text-xs font-medium shadow">Actualizar</button>
@@ -178,9 +216,18 @@
         <h2 class="text-base font-bold mb-4 text-[#1F2D3A]">Modificar Alumno</h2>
         <form id="formEditarEstudiante" onsubmit="return guardarEdicionEstudianteAsincrona(event)" class="space-y-4">
             <input type="hidden" id="edit_estudiante_id">
-            <div><label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Nombre Completo</label><input type="text" id="edit_nombre_estudiante" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2"></div>
-            <div><label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Correo Electrónico</label><input type="email" id="edit_correo_estudiante" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2"></div>
-            <div><label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Teléfono</label><input type="text" id="edit_telefono_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-[#7FC8D6] focus:ring-2"></div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Nombre Completo</label>
+                <input type="text" id="edit_nombre_estudiante" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Correo Electrónico</label>
+                <input type="email" id="edit_correo_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2">
+            </div>
+            <div>
+                <label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Teléfono</label>
+                <input type="text" id="edit_telefono_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2">
+            </div>
             <div class="flex justify-end space-x-2 pt-2">
                 <button type="button" onclick="document.getElementById('modalEstudiante').classList.add('hidden')" class="bg-[#F4F8FB] text-[#5F6C7B] px-4 py-2 rounded-lg text-xs font-medium">Cancelar</button>
                 <button type="submit" class="bg-[#2F6F8F] text-white px-4 py-2 rounded-lg text-xs font-medium shadow">Actualizar</button>
@@ -201,92 +248,83 @@
     const iconEdit = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" /></svg>`;
     const iconTrash = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4"><path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" /></svg>`;
     const iconUnlink = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>`;
-    const iconMail = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>`;
-    const iconPhone = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.48-4.18-7.077-7.077l1.293-.97c.362-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>`;
+    const iconMail = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5 mr-1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25 2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" /></svg>`;
+    const iconPhone = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-3.5 h-3.5 mr-1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-2.896-1.596-5.48-4.18-7.077-7.077l1.293-.97c.362-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>`;
 
-    // --- LÓGICA DE UI/UX DE ACORDEONES (Exclusivos) ---
+    // --- LÓGICA DE UI/UX DE ACORDEONES ---
     function toggleAcordeon(idSeccion, idIcono) {
         const sec = document.getElementById(idSeccion);
         const icon = document.getElementById(idIcono);
-        const yaEstabaAbierto = !sec.classList.contains('hidden');
-
-        // Cerrar ambos primero
-        ['sec-materias', 'sec-cursos'].forEach(id => document.getElementById(id).classList.add('hidden'));
-        ['icon-mat', 'icon-cur'].forEach(id => document.getElementById(id).classList.remove('rotate-180'));
-
-        // Si el clickeado no estaba abierto, lo abrimos
-        if (!yaEstabaAbierto) {
+        if (sec.classList.contains('hidden')) {
             sec.classList.remove('hidden');
             icon.classList.add('rotate-180');
+        } else {
+            sec.classList.add('hidden');
+            icon.classList.remove('rotate-180');
         }
     }
 
-    // --- LÓGICA DE MODAL GLOBAL REGISTROS ---
+    // --- LÓGICA DE MODAL GLOBAL REGISTROS CON TABS ---
     function abrirModalRegistroGlobal() {
         document.getElementById('modalGlobal').classList.remove('hidden');
-        cambiarTabGlobal('estudiante');
+        cambiarTabGlobal('estudiante'); // Pestaña inicial por defecto
     }
-    function cerrarModalRegistroGlobal() { document.getElementById('modalGlobal').classList.add('hidden'); }
+    function cerrarModalRegistroGlobal() {
+        document.getElementById('modalGlobal').classList.add('hidden');
+    }
     function cambiarTabGlobal(tabName) {
+        // Ocultar todos los forms y resetear estilos de las pestañas
         ['estudiante', 'materia', 'curso'].forEach(name => {
             document.getElementById(`form-tab-${name}`).classList.add('hidden');
-            document.getElementById(`tab-${name}`).className = "flex-1 py-3 text-center border-b-2 border-transparent text-[#5F6C7B] hover:text-[#1F2D3A] transition-all";
+            const btn = document.getElementById(`tab-${name}`);
+            btn.className = "flex-1 py-3 text-center border-b-2 border-transparent text-[#5F6C7B] hover:text-[#1F2D3A] transition-all";
         });
+        
+        // Activar la seleccionada
         document.getElementById(`form-tab-${tabName}`).classList.remove('hidden');
-        document.getElementById(`tab-${tabName}`).className = "flex-1 py-3 text-center border-b-2 border-[#2F6F8F] text-[#2F6F8F] font-bold transition-all";
+        const activeBtn = document.getElementById(`tab-${tabName}`);
+        activeBtn.className = "flex-1 py-3 text-center border-b-2 border-[#2F6F8F] text-[#2F6F8F] font-bold transition-all";
     }
 
-    // --- RENDERIZADORES DE TABLAS (Responsivo a Móvil) ---
+    // --- RENDERIZADORES COMPATIBLES CON PAGINACIÓN BASE ---
     const renderFilaMateria = (mat, tbody) => {
-        if(!mat) { tbody.innerHTML = '<tr class="block md:table-row"><td colspan="4" class="block md:table-cell py-4 text-center text-[#5F6C7B]">Catálogo vacío.</td></tr>'; return; }
+        if(!mat) { tbody.innerHTML = '<tr><td colspan="4" class="py-4 text-center text-[#5F6C7B]">Catálogo vacío.</td></tr>'; return; }
         let acciones = rolUsuario === 'admin' 
-            ? `<div class="flex md:justify-center justify-end space-x-1.5"><button onclick="abrirModalMateria('${mat.id}','${mat.nombre_materia}','${mat.semestre}')" class="p-1.5 bg-[#F4F8FB] text-[#2F6F8F] rounded-md hover:bg-[#E3E8EE]">${iconEdit}</button><button onclick="eliminarMateriaAsincrona('${mat.id}')" class="p-1.5 bg-[#F4F8FB] text-[#E35D5D] rounded-md hover:bg-[#FEE2E2]">${iconTrash}</button></div>`
+            ? `<div class="flex justify-center space-x-1.5"><button onclick="abrirModalMateria('${mat.id}','${mat.nombre_materia}','${mat.semestre}')" class="p-1.5 bg-[#F4F8FB] text-[#2F6F8F] rounded-md hover:bg-[#E3E8EE] transition-colors">${iconEdit}</button><button onclick="eliminarMateriaAsincrona('${mat.id}')" class="p-1.5 bg-[#F4F8FB] text-[#E35D5D] rounded-md hover:bg-[#FEE2E2] transition-colors">${iconTrash}</button></div>`
             : `<span class="text-[10px] text-gray-400">Lectura</span>`;
-        const tr = document.createElement('tr'); 
-        tr.className="block md:table-row bg-white border border-[#E3E8EE] md:border-b md:border-x-0 md:border-t-0 rounded-lg md:rounded-none mb-3 md:mb-0 shadow-sm md:shadow-none p-3 md:p-0 hover:bg-[#F4F8FB]/30";
-        tr.innerHTML = `<td class="block md:table-cell py-1 md:py-2.5 md:px-4 font-mono text-[#5F6C7B] text-xs">ID: ${mat.id}</td><td class="block md:table-cell py-1 md:py-2.5 md:px-4 font-bold text-[#1F2D3A]">${mat.nombre_materia}</td><td class="block md:table-cell py-1 md:py-2.5 md:px-4"><span class="bg-gray-100 px-2 py-0.5 rounded text-[11px] font-semibold">${mat.semestre}° Sem</span></td><td class="block md:table-cell pt-3 border-t border-gray-100 md:border-0 md:py-2.5 md:px-4 text-center mt-2 md:mt-0">${acciones}</td>`;
+        const tr = document.createElement('tr'); tr.className="hover:bg-[#F4F8FB]/30 transition-colors";
+        tr.innerHTML = `<td class="py-2.5 px-4 font-mono text-[#5F6C7B]">${mat.id}</td><td class="py-2.5 px-4 font-semibold text-[#1F2D3A]">${mat.nombre_materia}</td><td class="py-2.5 px-4"><span class="bg-gray-100 px-2 py-0.5 rounded text-[11px] font-semibold">${mat.semestre}° Sem</span></td><td class="py-2.5 px-4 text-center">${acciones}</td>`;
         tbody.appendChild(tr);
     };
 
     const renderFilaCurso = (c, tbody) => {
-        if(!c) { tbody.innerHTML = '<tr class="block md:table-row"><td colspan="5" class="block md:table-cell py-4 text-center text-[#5F6C7B]">Sin cursos.</td></tr>'; return; }
-        const tr = document.createElement('tr'); 
-        tr.className="block md:table-row bg-white border border-[#E3E8EE] md:border-b md:border-x-0 md:border-t-0 rounded-lg md:rounded-none mb-3 md:mb-0 shadow-sm md:shadow-none p-3 md:p-0 hover:bg-[#F4F8FB]/30";
-        tr.innerHTML = `<td class="block md:table-cell py-1 md:py-2.5 md:px-4 font-mono text-[#5F6C7B] text-xs">ID: ${c.id}</td><td class="block md:table-cell py-1 md:py-2.5 md:px-4 font-bold text-[#1F2D3A]">${c.curso_nombre}</td><td class="block md:table-cell py-1 md:py-2.5 md:px-4 text-[#5F6C7B] text-sm">Sem. ${c.semestre}</td><td class="block md:table-cell py-2 md:py-2.5 md:px-4"><span class="bg-[#7FC8D6]/10 px-2 py-0.5 rounded font-bold text-[#2F6F8F] text-xs">Sección ${c.seccion}</span></td><td class="block md:table-cell pt-3 border-t border-gray-100 md:border-0 md:py-2.5 md:px-4 text-center mt-2 md:mt-0"><button onclick="eliminarCursoAsincrono('${c.id}')" class="p-1.5 md:p-1 text-[#E35D5D] bg-red-50 hover:bg-red-100 md:bg-transparent rounded-lg w-full md:w-auto transition-colors inline-flex justify-center items-center space-x-1">${iconUnlink}<span class="text-[11px] font-bold">Baja</span></button></td>`;
+        if(!c) { tbody.innerHTML = '<tr><td colspan="5" class="py-4 text-center text-[#5F6C7B]">Sin cursos.</td></tr>'; return; }
+        const tr = document.createElement('tr'); tr.className="hover:bg-[#F4F8FB]/30 transition-colors";
+        tr.innerHTML = `<td class="py-2.5 px-4 font-mono text-[#5F6C7B]">${c.id}</td><td class="py-2.5 px-4 font-semibold text-[#1F2D3A]">${c.curso_nombre}</td><td class="py-2.5 px-4 text-[#5F6C7B]">Sem. ${c.semestre}</td><td class="py-2.5 px-4"><span class="bg-[#7FC8D6]/10 px-2 py-0.5 rounded font-bold text-[#2F6F8F]">${c.seccion}</span></td><td class="py-2.5 px-4 text-center"><button onclick="eliminarCursoAsincrono('${c.id}')" class="p-1 text-[#E35D5D] hover:bg-red-50 rounded transition-colors inline-flex items-center space-x-1">${iconUnlink}<span class="text-[10px] font-bold">Baja</span></button></td>`;
         tbody.appendChild(tr);
     };
 
     const renderFilaEstudiante = (est, tbody) => {
-        if(!est) { tbody.innerHTML = '<tr class="block md:table-row"><td colspan="3" class="block md:table-cell py-8 text-center text-[#5F6C7B]">No hay matrícula de estudiantes registrada.</td></tr>'; return; }
+        if(!est) { tbody.innerHTML = '<tr><td colspan="3" class="py-8 text-center text-[#5F6C7B]">No hay matrícula de estudiantes registrada.</td></tr>'; return; }
         const tr = document.createElement('tr');
-        // Magia para Desktop (Tabla Normal) vs Móvil (Card Flotante)
-        tr.className = "flex flex-col md:table-row bg-white border border-[#E3E8EE] md:border-b md:border-x-0 md:border-t-0 rounded-xl md:rounded-none mb-4 md:mb-0 shadow-sm md:shadow-none p-4 md:p-0 hover:bg-[#F4F8FB]/40 transition-colors";
+        tr.className = "hover:bg-[#F4F8FB]/40 transition-colors bg-white";
         tr.innerHTML = `
-            <td class="block md:table-cell pb-3 md:pb-0 md:py-4 md:px-6">
-                <div class="flex justify-between md:flex-col md:items-start items-center">
-                    <span class="md:hidden font-bold text-[10px] text-[#7FC8D6] uppercase tracking-wider">ALUMNO</span>
-                    <div class="text-right md:text-left">
-                        <span class="font-bold text-[#1F2D3A] text-base block">${est.nombre}</span>
-                        <span class="text-xs font-mono text-[#2F6F8F] mt-0.5 tracking-wide bg-gray-50 md:bg-transparent px-2 md:px-0 py-0.5 rounded">${est.carnet}</span>
-                    </div>
+            <td class="py-4 px-6">
+                <div class="flex flex-col">
+                    <span class="font-bold text-[#1F2D3A] text-base">${est.nombre}</span>
+                    <span class="text-xs font-mono text-[#2F6F8F] mt-0.5 tracking-wide">${est.carnet}</span>
                 </div>
             </td>
-            <td class="block md:table-cell py-3 md:py-4 md:px-6 border-t border-gray-100 md:border-none">
-                <div class="flex flex-col space-y-1.5 text-xs text-[#5F6C7B]">
-                    <div class="flex items-center justify-end md:justify-start">
-                        <span class="md:hidden mr-auto font-medium text-gray-400">Email:</span>
-                        ${iconMail} <span class="font-medium">${est.correo}</span>
-                    </div>
-                    <div class="flex items-center justify-end md:justify-start text-gray-500">
-                        <span class="md:hidden mr-auto font-medium text-gray-400">Telf:</span>
-                        ${iconPhone} ${est.telefono}
-                    </div>
+            <td class="py-4 px-6">
+                <div class="flex flex-col space-y-1 text-xs text-[#5F6C7B]">
+                    <div class="flex items-center">${iconMail} ${est.correo}</div>
+                    <div class="flex items-center text-gray-400">${iconPhone} ${est.telefono}</div>
                 </div>
             </td>
-            <td class="block md:table-cell pt-4 md:pt-0 md:py-4 md:px-6 text-center border-t border-gray-100 md:border-none">
-                <div class="flex justify-end md:justify-center space-x-2">
-                    <button onclick="abrirModalEstudiante('${est.id}','${est.nombre}','${est.correo}','${est.telefono}')" title="Modificar expediente" class="p-2.5 md:p-2 bg-[#F4F8FB] text-[#2F6F8F] rounded-lg hover:bg-[#E3E8EE] transition-colors">${iconEdit}</button>
-                    <button onclick="eliminarEstudianteAsincrono('${est.id}')" title="Baja permanente" class="p-2.5 md:p-2 bg-[#FEE2E2] text-[#E35D5D] rounded-lg hover:bg-red-200 transition-colors">${iconTrash}</button>
+            <td class="py-4 px-6 text-center">
+                <div class="flex justify-center space-x-2">
+                    <button onclick="abrirModalEstudiante('${est.id}','${est.nombre}','${est.correo}','${est.telefono}')" title="Modificar expediente" class="p-2 bg-[#F4F8FB] text-[#2F6F8F] rounded-xl hover:bg-[#E3E8EE] transition-colors shadow-2xs">${iconEdit}</button>
+                    <button onclick="eliminarEstudianteAsincrono('${est.id}')" title="Baja permanente" class="p-2 bg-[#F4F8FB] text-[#E35D5D] rounded-xl hover:bg-[#FEE2E2] transition-colors shadow-2xs">${iconTrash}</button>
                 </div>
             </td>
         `;
@@ -295,19 +333,32 @@
 
     // --- INICIALIZADOR PRINCIPAL ---
     document.addEventListener('DOMContentLoaded', () => {
+        // Actualizar badges numéricos de totales antes de paginar
         document.getElementById('badge-count-mat').innerText = materiasData.length;
         document.getElementById('badge-count-cur').innerText = cursosData.length;
         document.getElementById('badge-count-est').innerText = `${estudiantesData.length} Alumnos`;
 
+        // Disparar las 3 paginaciones delegadas a base.html
         inicializarPaginacion({ data: materiasData, registrosPorPagina: 5, containerTablaId: 'tbody-materias', containerPaginacionId: 'paginacion-materias', renderFilaFunc: renderFilaMateria });
         inicializarPaginacion({ data: cursosData, registrosPorPagina: 5, containerTablaId: 'tbody-cursos', containerPaginacionId: 'paginacion-cursos', renderFilaFunc: renderFilaCurso });
-        // PAGINACIÓN ESTUDIANTES SETEADA EN 10 REGISTROS (10 CARDS)
         inicializarPaginacion({ data: estudiantesData, registrosPorPagina: 10, containerTablaId: 'tbody-estudiantes', containerPaginacionId: 'paginacion-estudiantes', renderFilaFunc: renderFilaEstudiante });
     });
 
-    // --- LOGICA DE NEGOCIO Y AJAX ENDPOINTS ---
-    function abrirModalMateria(id, nombre, semestre) { document.getElementById('edit_materia_id').value = id; document.getElementById('edit_nombre_materia').value = nombre; document.getElementById('edit_semestre_materia').value = semestre; document.getElementById('modalMateria').classList.remove('hidden'); }
-    function abrirModalEstudiante(id, nombre, correo, telefono) { document.getElementById('edit_estudiante_id').value = id; document.getElementById('edit_nombre_estudiante').value = nombre; document.getElementById('edit_correo_estudiante').value = correo; document.getElementById('edit_telefono_estudiante').value = telefono; document.getElementById('modalEstudiante').classList.remove('hidden'); }
+    // --- LOGICA DE NEGOCIO Y AJAX ENDPOINTS VINCULADOS ---
+    function abrirModalMateria(id, nombre, semestre) {
+        document.getElementById('edit_materia_id').value = id;
+        document.getElementById('edit_nombre_materia').value = nombre;
+        document.getElementById('edit_semestre_materia').value = semestre;
+        document.getElementById('modalMateria').classList.remove('hidden');
+    }
+    function abrirModalEstudiante(id, nombre, correo, telefono) {
+        document.getElementById('edit_estudiante_id').value = id;
+        document.getElementById('edit_nombre_estudiante').value = nombre;
+        document.getElementById('edit_correo_estudiante').value = correo;
+        document.getElementById('edit_telefono_estudiante').value = telefono;
+        document.getElementById('modalEstudiante').classList.remove('hidden');
+    }
+
     async function guardarMateriaAsincrona(e) { if(e) e.preventDefault(); let nom=document.getElementById('nombre_materia').value.trim(), sem=document.getElementById('semestre_materia').value; try { let res=await fetch('/api/materias/crear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre_materia:nom,semestre:parseInt(sem)})}); let r=await res.json(); if(res.ok){ cerrarModalRegistroGlobal(); mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error de red.",'error'); } return false; }
     async function guardarEdicionMateriaAsincrona(e) { if(e) e.preventDefault(); let id=document.getElementById('edit_materia_id').value, nom=document.getElementById('edit_nombre_materia').value.trim(), sem=document.getElementById('edit_semestre_materia').value; try { let res=await fetch(`/api/materias/editar/${id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre_materia:nom,semestre:parseInt(sem)})}); let r=await res.json(); if(res.ok){ document.getElementById('modalMateria').classList.add('hidden'); mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error al editar.",'error'); } return false; }
     async function eliminarMateriaAsincrona(id) { if(!confirm('¿Eliminar materia?')) return; try { let res=await fetch(`/api/materias/eliminar/${id}`,{method:'DELETE'}); let r=await res.json(); if(res.ok){ mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error.",'error'); } }

@@ -92,7 +92,47 @@ def portal_estudiante():
 def dashboard():
     if 'user_id' not in session or session.get('rol') == 'estudiante':
         return redirect(url_for('login'))
-    return render_template('dashboard.html')
+        
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    # 1. Obtener total de profesores
+    cursor.execute("SELECT COUNT(*) as total FROM profesores")
+    total_profesores = cursor.fetchone()['total']
+    
+    # Lógica condicional: El Admin ve todo, el Profesor ve solo sus métricas
+    if session.get('rol') == 'admin':
+        # 2. Total de cursos activos (todas las asignaciones)
+        cursor.execute("SELECT COUNT(*) as total FROM asignaciones")
+        total_cursos = cursor.fetchone()['total']
+        
+        # 3. Total de notas registradas globales
+        cursor.execute("SELECT COUNT(*) as total FROM calificaciones")
+        total_notas = cursor.fetchone()['total']
+    else:
+        profesor_id = session['user_id']
+        
+        # 2. Total de cursos asignados al profesor logueado
+        cursor.execute("SELECT COUNT(*) as total FROM asignaciones WHERE profesor_id = %s", (profesor_id,))
+        total_cursos = cursor.fetchone()['total']
+        
+        # 3. Total de notas registradas por este profesor
+        cursor.execute("""
+            SELECT COUNT(c.id) as total 
+            FROM calificaciones c
+            JOIN asignaciones a ON c.asignacion_id = a.id
+            WHERE a.profesor_id = %s
+        """, (profesor_id,))
+        total_notas = cursor.fetchone()['total']
+        
+    cursor.close()
+    conn.close()
+    
+    # Pasamos los totales a la plantilla HTML
+    return render_template('dashboard.html', 
+                           total_profesores=total_profesores, 
+                           total_cursos=total_cursos, 
+                           total_notas=total_notas)
 
 @app.route('/profesores', methods=['GET'])
 def profesores():
@@ -426,6 +466,49 @@ def api_eliminar_calificacion(id):
     cursor.execute("DELETE FROM calificaciones WHERE id = %s", (id,))
     conn.commit(); cursor.close(); conn.close()
     return jsonify({'success': 'Registro de calificación revocado de forma asíncrona.'})
+
+@app.route('/api/cambiar_password', methods=['POST'])
+def api_cambiar_password():
+    if 'user_id' not in session: 
+        return jsonify({'error': 'No autorizado'}), 401
+        
+    data = request.get_json()
+    pass_actual = data.get('pass_actual')
+    pass_nueva = data.get('pass_nueva')
+    
+    if not pass_actual or not pass_nueva:
+        return jsonify({'error': 'Faltan datos obligatorios.'}), 400
+        
+    user_id = session['user_id']
+    rol = session.get('rol')
+    
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    
+    try:
+        # Detectar la tabla correcta según el rol del usuario en sesión
+        tabla = 'estudiantes' if rol == 'estudiante' else 'profesores'
+        
+        # Obtener el hash actual
+        cursor.execute(f"SELECT password FROM {tabla} WHERE id = %s", (user_id,))
+        user = cursor.fetchone()
+        
+        # Verificar que la contraseña actual ingresada es correcta
+        if not user or not check_password_hash(user['password'], pass_actual):
+            return jsonify({'error': 'La contraseña actual es incorrecta.'}), 400
+            
+        # Generar nuevo hash y actualizar
+        nuevo_hash = generate_password_hash(pass_nueva)
+        cursor.execute(f"UPDATE {tabla} SET password = %s WHERE id = %s", (nuevo_hash, user_id))
+        conn.commit()
+        
+        return jsonify({'success': 'Tu contraseña ha sido actualizada con éxito.'})
+        
+    except mysql.connector.Error as err:
+        return jsonify({'error': 'Hubo un problema al conectar con la base de datos.'}), 500
+    finally:
+        cursor.close()
+        conn.close()
 
 @app.route('/logout')
 def logout():

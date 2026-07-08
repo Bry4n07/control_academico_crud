@@ -5,63 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Control Académico{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            bg: '#F4F8FB',
+                            card: '#FFFFFF',
+                            btn: '#2F6F8F',
+                            hover: '#4A90A4',
+                            title: '#1F2D3A',
+                            text: '#5F6C7B',
+                            border: '#E3E8EE',
+                            focus: '#7FC8D6',
+                            error: '#E35D5D',
+                            success: '#4CAF50'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col">
+<body class="bg-brand-bg min-h-screen flex flex-col font-sans selection:bg-brand-focus selection:text-brand-title">
 
     {% if session.get('user_id') %}
-    <nav class="bg-slate-800 p-4 text-white shadow-md flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="flex items-center gap-4">
-            <h1 class="text-xl font-bold tracking-wide">
+    <nav class="bg-brand-card border-b border-brand-border px-4 sm:px-6 py-3 sm:py-4 flex flex-row justify-between items-center sticky top-0 z-40 shadow-sm w-full">
+        <div class="flex items-center gap-6">
+            <h1 class="text-lg sm:text-xl font-extrabold tracking-tight text-brand-title flex items-center gap-2 truncate">
+                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-brand-btn flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
                 {% if session.get('rol') == 'estudiante' %}
-                    <a href="/portal-estudiante" class="hover:text-blue-400 transition">🏫 Control Académico</a>
+                    <a href="/portal-estudiante" class="hover:text-brand-hover transition-colors truncate">Control Académico</a>
                 {% else %}
-                    <a href="/dashboard" class="hover:text-blue-400 transition">🏫 Control Académico</a>
+                    <a href="/dashboard" class="hover:text-brand-hover transition-colors truncate">Control Académico</a>
                 {% endif %}
             </h1>
             
-            <div class="hidden md:flex items-center space-x-4 border-l border-slate-700 pl-4 text-sm font-medium text-slate-300">
+            <div class="hidden md:flex items-center space-x-6 border-l border-brand-border pl-6 text-sm font-semibold text-brand-text">
                 {% if session.get('rol') == 'estudiante' %}
-                    <a href="/portal-estudiante" class="hover:text-white transition">📋 Mis Calificaciones</a>
+                    <a href="/portal-estudiante" class="hover:text-brand-btn transition-colors">Mis Calificaciones</a>
                 {% else %}
-                    <a href="/dashboard" class="hover:text-white transition">🏠 Inicio</a>
-                    <a href="/cursos_estudiantes" class="hover:text-white transition">📚 Cursos y Estudiantes</a>
-                    <a href="/calificaciones" class="hover:text-white transition">✍️ Calificaciones</a>
-                    
+                    <a href="/dashboard" class="hover:text-brand-btn transition-colors">Inicio</a>
+                    <a href="/cursos_estudiantes" class="hover:text-brand-btn transition-colors">Cursos y Estudiantes</a>
+                    <a href="/calificaciones" class="hover:text-brand-btn transition-colors">Calificaciones</a>
                     {% if session.get('rol') == 'admin' %}
-                        <a href="/profesores" class="text-amber-400 hover:text-amber-300 font-semibold transition">⚙️ Administrar Personal</a>
+                        <a href="/profesores" class="text-brand-btn hover:text-brand-hover transition-colors">Administrar Personal</a>
                     {% endif %}
                 {% endif %}
             </div>
         </div>
 
-        <div class="flex items-center gap-4">
-            <div class="text-right">
-                <span class="block text-xs text-slate-400 font-bold uppercase tracking-wider">
-                    {% if session.get('rol') == 'admin' %}
-                        Administrador
-                    {% elif session.get('rol') == 'profesor' %}
-                        Docente
-                    {% else %}
-                        Estudiante
-                    {% endif %}
-                </span>
-                <span class="text-sm font-medium text-slate-200">{{ session.get('user_name') }}</span>
+        <div class="flex items-center">
+            <div class="relative inline-block text-left" id="userMenuContainer">
+                <button type="button" onclick="toggleUserMenu()" class="flex items-center gap-2 sm:gap-3 focus:outline-none hover:bg-brand-bg px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl transition-colors" id="userMenuButton">
+                    <div class="text-right hidden sm:block">
+                        <span class="block text-[10px] font-bold uppercase tracking-wider text-brand-text">
+                            {% if session.get('rol') == 'admin' %}Administrador
+                            {% elif session.get('rol') == 'profesor' %}Docente
+                            {% else %}Estudiante{% endif %}
+                        </span>
+                        <span class="text-sm font-bold text-brand-title leading-none">{{ session.get('user_name') }}</span>
+                    </div>
+                    <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-brand-btn text-white flex items-center justify-center font-bold shadow-sm text-sm sm:text-base flex-shrink-0">
+                        {{ session.get('user_name')[:1] | upper }}
+                    </div>
+                    <svg class="w-4 h-4 text-brand-text hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+
+                <div id="userDropdown" class="hidden absolute right-0 mt-2 w-56 rounded-xl shadow-lg bg-brand-card ring-1 ring-black ring-opacity-5 focus:outline-none z-50 transform opacity-0 scale-95 transition-all duration-200 origin-top-right">
+                    <div class="py-2" role="menu">
+                        <div class="px-4 py-3 border-b border-brand-border sm:hidden bg-brand-bg">
+                            <p class="text-sm font-bold text-brand-title truncate">{{ session.get('user_name') }}</p>
+                            <p class="text-[10px] font-bold uppercase text-brand-text mt-0.5">
+                                {% if session.get('rol') == 'admin' %}Administrador
+                                {% elif session.get('rol') == 'profesor' %}Docente
+                                {% else %}Estudiante{% endif %}
+                            </p>
+                        </div>
+                        <button onclick="abrirModalPassword()" class="w-full text-left px-4 py-3 sm:py-2.5 text-sm font-semibold text-brand-title hover:bg-brand-bg transition-colors flex items-center gap-3">
+                            <svg class="w-4 h-4 text-brand-btn" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                            Cambiar Contraseña
+                        </button>
+                        <a href="/logout" class="w-full text-left px-4 py-3 sm:py-2.5 text-sm font-semibold text-brand-error hover:bg-red-50 transition-colors flex items-center gap-3 border-t border-brand-border mt-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                            Cerrar Sesión
+                        </a>
+                    </div>
+                </div>
             </div>
-            <a href="/logout" class="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded text-sm font-semibold transition shadow-sm">
-                Cerrar Sesión
-            </a>
         </div>
     </nav>
     
-    <div class="bg-slate-700 text-white text-xs flex justify-around p-2 md:hidden font-medium">
+    <div class="bg-brand-card border-b border-brand-border text-brand-text flex md:hidden font-semibold shadow-sm overflow-x-auto whitespace-nowrap [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {% if session.get('rol') == 'estudiante' %}
-            <a href="/portal-estudiante" class="hover:text-blue-300">Mis Notas</a>
+            <a href="/portal-estudiante" class="px-5 py-3 hover:text-brand-title hover:bg-brand-bg flex-1 text-center transition-colors text-sm">Mis Notas</a>
         {% else %}
-            <a href="/dashboard" class="hover:text-blue-300">Inicio</a>
-            <a href="/cursos_estudiantes" class="hover:text-blue-300">Cursos</a>
-            <a href="/calificaciones" class="hover:text-blue-300">Notas</a>
+            <a href="/dashboard" class="px-5 py-3 hover:text-brand-title hover:bg-brand-bg transition-colors text-sm border-r border-brand-border/50">Inicio</a>
+            <a href="/cursos_estudiantes" class="px-5 py-3 hover:text-brand-title hover:bg-brand-bg transition-colors text-sm border-r border-brand-border/50">Cursos</a>
+            <a href="/calificaciones" class="px-5 py-3 hover:text-brand-title hover:bg-brand-bg transition-colors text-sm border-r border-brand-border/50">Notas</a>
             {% if session.get('rol') == 'admin' %}
-                <a href="/profesores" class="text-amber-300">Cuentas</a>
+                <a href="/profesores" class="px-5 py-3 hover:text-brand-title hover:bg-brand-bg transition-colors text-sm">Personal</a>
             {% endif %}
         {% endif %}
     </div>
@@ -72,51 +116,163 @@
         {% endblock %}
     </main>
 
-    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col gap-3 pointer-events-none"></div>
+    <div id="toastContainer" class="fixed top-6 right-6 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <div id="modalPassword" class="fixed inset-0 z-[60] hidden">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="cerrarModalPassword()"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="relative bg-brand-card rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-md w-full border border-brand-border">
+                <form id="formCambiarPassword" onsubmit="submitCambiarPassword(event)">
+                    <div class="px-6 py-5 border-b border-brand-border flex justify-between items-center bg-brand-bg">
+                        <h3 class="text-lg font-bold text-brand-title">Cambiar Contraseña</h3>
+                        <button type="button" onclick="cerrarModalPassword()" class="text-brand-text hover:text-brand-error transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-brand-title mb-1">Contraseña Actual</label>
+                            <input type="password" id="pass_actual" required class="w-full px-4 py-2 border border-brand-border rounded-lg focus:ring-2 focus:ring-brand-focus focus:border-brand-focus outline-none transition-all text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-brand-title mb-1">Nueva Contraseña</label>
+                            <input type="password" id="pass_nueva" required minlength="6" class="w-full px-4 py-2 border border-brand-border rounded-lg focus:ring-2 focus:ring-brand-focus focus:border-brand-focus outline-none transition-all text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-brand-title mb-1">Confirmar Nueva Contraseña</label>
+                            <input type="password" id="pass_confirmar" required minlength="6" class="w-full px-4 py-2 border border-brand-border rounded-lg focus:ring-2 focus:ring-brand-focus focus:border-brand-focus outline-none transition-all text-sm">
+                        </div>
+                    </div>
+                    <div class="px-6 py-4 bg-brand-bg border-t border-brand-border flex justify-end gap-3">
+                        <button type="button" onclick="cerrarModalPassword()" class="px-4 py-2 text-sm font-semibold text-brand-text hover:bg-slate-200 rounded-lg transition-colors">Cancelar</button>
+                        <button type="submit" id="btnSubmitPassword" class="px-4 py-2 text-sm font-semibold text-white bg-brand-btn hover:bg-brand-hover rounded-lg transition-colors shadow-sm focus:ring-2 focus:ring-brand-focus focus:outline-none flex items-center gap-2">
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
     <script>
+        // --- DROPDOWN MENU ---
+        const dropdown = document.getElementById('userDropdown');
+        
+        function toggleUserMenu() {
+            if (dropdown.classList.contains('hidden')) {
+                dropdown.classList.remove('hidden');
+                setTimeout(() => {
+                    dropdown.classList.remove('opacity-0', 'scale-95');
+                    dropdown.classList.add('opacity-100', 'scale-100');
+                }, 10);
+            } else {
+                dropdown.classList.remove('opacity-100', 'scale-100');
+                dropdown.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => dropdown.classList.add('hidden'), 200);
+            }
+        }
+
+        document.addEventListener('click', (event) => {
+            const container = document.getElementById('userMenuContainer');
+            if (container && !container.contains(event.target) && !dropdown.classList.contains('hidden')) {
+                toggleUserMenu();
+            }
+        });
+
+        // --- MODAL CONTRASEÑA ---
+        const modalPass = document.getElementById('modalPassword');
+        
+        function abrirModalPassword() {
+            dropdown.classList.add('hidden'); // Cierra el dropdown al abrir
+            document.getElementById('formCambiarPassword').reset();
+            modalPass.classList.remove('hidden');
+        }
+
+        function cerrarModalPassword() {
+            modalPass.classList.add('hidden');
+        }
+
+        async function submitCambiarPassword(e) {
+            e.preventDefault();
+            
+            const pass_actual = document.getElementById('pass_actual').value;
+            const pass_nueva = document.getElementById('pass_nueva').value;
+            const pass_confirmar = document.getElementById('pass_confirmar').value;
+
+            if (pass_nueva !== pass_confirmar) {
+                mostrarToast('Las contraseñas nuevas no coinciden.', 'error');
+                return;
+            }
+
+            const btnSubmit = document.getElementById('btnSubmitPassword');
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = 'Procesando...';
+
+            try {
+                const response = await fetch('/api/cambiar_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pass_actual, pass_nueva })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    mostrarToast(data.success, 'success');
+                    cerrarModalPassword();
+                } else {
+                    mostrarToast(data.error || 'Error al actualizar contraseña.', 'error');
+                }
+            } catch (error) {
+                mostrarToast('Error de conexión con el servidor.', 'error');
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = 'Guardar Cambios';
+            }
+        }
+
+        // --- SISTEMA DE NOTIFICACIONES (TOASTS) ---
         function mostrarToast(mensaje, tipo = 'success') {
             const container = document.getElementById('toastContainer');
             if (!container) return;
 
             const toast = document.createElement('div');
-            toast.className = `flex items-center gap-3 p-4 rounded-lg shadow-xl text-sm font-semibold border transition-all duration-300 transform translate-y-4 opacity-0 pointer-events-auto min-w-[280px] max-w-sm`;
+            // Ancho adaptativo para móviles: w-[90vw] en pantallas chicas, luego w-72 o w-80 en grandes
+            toast.className = `flex items-center gap-3 p-4 rounded-xl shadow-lg bg-brand-card border-l-4 text-sm font-semibold transition-all duration-300 transform translate-x-full opacity-0 pointer-events-auto w-[90vw] max-w-sm sm:w-80`;
 
             if (tipo === 'success') {
-                toast.classList.add('bg-green-50', 'border-green-200', 'text-green-800');
+                toast.classList.add('border-brand-success', 'text-brand-title');
                 toast.innerHTML = `
-                    <svg class="w-5 h-5 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span>${mensaje}</span>
+                    <div class="p-1 rounded-full bg-green-50 flex-shrink-0">
+                        <svg class="w-5 h-5 text-brand-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <span class="flex-grow">${mensaje}</span>
                 `;
             } else {
-                toast.classList.add('bg-red-50', 'border-red-200', 'text-red-800');
+                toast.classList.add('border-brand-error', 'text-brand-title');
                 toast.innerHTML = `
-                    <svg class="w-5 h-5 text-red-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <span>${mensaje}</span>
+                    <div class="p-1 rounded-full bg-red-50 flex-shrink-0">
+                        <svg class="w-5 h-5 text-brand-error" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </div>
+                    <span class="flex-grow">${mensaje}</span>
                 `;
             }
 
             container.appendChild(toast);
 
             setTimeout(() => {
-                toast.classList.remove('translate-y-4', 'opacity-0');
-                toast.classList.add('translate-y-0', 'opacity-100');
+                toast.classList.remove('translate-x-full', 'opacity-0');
+                toast.classList.add('translate-x-0', 'opacity-100');
             }, 10);
 
             setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0', 'translate-y-2');
-                
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
-            }, 3500);
+                toast.classList.remove('translate-x-0', 'opacity-100');
+                toast.classList.add('opacity-0', '-translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000); 
         }
 
+        // --- SISTEMA DE PAGINACIÓN ---
         function inicializarPaginacion({ data, registrosPorPagina = 10, containerTablaId, containerPaginacionId, renderFilaFunc }) {
             let paginaActual = 1;
             const totalPaginas = Math.ceil(data.length / registrosPorPagina);
@@ -153,28 +309,28 @@
                 if (totalPaginas <= 1) return;
 
                 const nav = document.createElement('nav');
-                nav.className = 'flex items-center justify-center space-x-1 mt-6 text-sm font-semibold text-slate-700';
+                nav.className = 'flex items-center justify-center space-x-1 mt-6 text-sm font-semibold text-brand-text';
 
+                // Botón Anterior
                 const btnAnt = document.createElement('button');
-                btnAnt.className = `p-2 rounded hover:bg-slate-200 transition ${paginaActual === 1 ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`;
-                btnAnt.innerHTML = `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-                `;
+                btnAnt.className = `p-2 rounded-lg transition-colors duration-200 flex items-center justify-center ${paginaActual === 1 ? 'opacity-40 cursor-not-allowed pointer-events-none' : 'hover:bg-brand-border hover:text-brand-title'}`;
+                btnAnt.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>`;
                 btnAnt.onclick = () => cambiarPagina(paginaActual - 1);
                 nav.appendChild(btnAnt);
 
+                // Números de página
                 const rangoMaximo = 2; 
                 for (let i = 1; i <= totalPaginas; i++) {
                     if (i === 1 || i === totalPaginas || (i >= paginaActual - rangoMaximo && i <= paginaActual + rangoMaximo)) {
                         const btnNum = document.createElement('button');
                         btnNum.innerText = i;
-                        btnNum.className = `px-3 py-1.5 rounded transition ${paginaActual === i ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-slate-200'}`;
-                        btnNum.onclick = () => cambiarPagina(i);
+                        btnNum.className = `w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-200 ${paginaActual === i ? 'bg-brand-btn text-white shadow-md cursor-default' : 'hover:bg-brand-border hover:text-brand-title'}`;
+                        if(paginaActual !== i) btnNum.onclick = () => cambiarPagina(i);
                         nav.appendChild(btnNum);
                     } else if (i === 2 || i === totalPaginas - 1) {
                         const puntos = document.createElement('span');
                         puntos.innerText = '...';
-                        puntos.className = 'px-2 text-slate-400 select-none';
+                        puntos.className = 'px-1 text-brand-text select-none';
                         nav.appendChild(puntos);
                         
                         if (i === 2) i = paginaActual - rangoMaximo - 1;
@@ -182,11 +338,10 @@
                     }
                 }
 
+                // Botón Siguiente
                 const btnSig = document.createElement('button');
-                btnSig.className = `p-2 rounded hover:bg-slate-200 transition ${paginaActual === totalPaginas ? 'opacity-40 cursor-not-allowed pointer-events-none' : ''}`;
-                btnSig.innerHTML = `
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-                `;
+                btnSig.className = `p-2 rounded-lg transition-colors duration-200 flex items-center justify-center ${paginaActual === totalPaginas ? 'opacity-40 cursor-not-allowed pointer-events-none' : 'hover:bg-brand-border hover:text-brand-title'}`;
+                btnSig.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>`;
                 btnSig.onclick = () => cambiarPagina(paginaActual + 1);
                 nav.appendChild(btnSig);
 
@@ -196,6 +351,5 @@
             cambiarPagina(1);
         }
     </script>
-
 </body>
 </html>

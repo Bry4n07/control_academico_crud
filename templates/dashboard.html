@@ -3,33 +3,94 @@
 {% block title %}Dashboard - Control Académico{% endblock %}
 
 {% block content %}
-<div class="container mx-auto mt-10 p-4">
-    <h2 class="text-3xl font-bold mb-8 text-slate-800">Panel de Control Principal</h2>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500 hover:shadow-lg transition">
-            <h3 class="text-xl font-bold mb-2 text-slate-800">Profesores</h3>
-            <p class="text-slate-600 mb-6 text-sm">Crear y eliminar cuentas de catedráticos del sistema escolar.</p>
-            <a href="/profesores" class="inline-block bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded transition">
-                Administrar Profesores &rarr;
-            </a>
+<div class="min-h-screen bg-[#F4F8FB] p-6 lg:p-12 font-sans">
+    <div class="max-w-7xl mx-auto space-y-12">
+
+        <div class="border-b border-[#E3E8EE] pb-6">
+            <h1 class="text-4xl font-extrabold text-[#1F2D3A] tracking-tight">Panel de Control</h1>
+            <p class="mt-2 text-lg text-[#5F6C7B]">Resumen general y accesos rápidos del sistema académico.</p>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-emerald-500 hover:shadow-lg transition">
-            <h3 class="text-xl font-bold mb-2 text-slate-800">Cursos y Estudiantes</h3>
-            <p class="text-slate-600 mb-6 text-sm">Gestionar asignaturas y alumnos respetando los límites reglamentarios.</p>
-            <a href="/cursos_estudiantes" class="inline-block bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-4 py-2 rounded transition">
-                Ir a Cursos y Alumnos &rarr;
-            </a>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="bg-[#FFFFFF] p-6 rounded-2xl border border-[#E3E8EE] shadow-sm flex items-center gap-5 hover:border-[#7FC8D6] transition-colors">
+                <div class="p-4 bg-[#F4F8FB] rounded-xl text-[#2F6F8F]">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-[#5F6C7B] uppercase tracking-wider">Total Profesores</p>
+                    <p class="text-3xl font-extrabold text-[#1F2D3A] mt-1">{{ total_profesores }}</p>
+                </div>
+            </div>
+
+            <div class="bg-[#FFFFFF] p-6 rounded-2xl border border-[#E3E8EE] shadow-sm flex items-center gap-5 hover:border-[#7FC8D6] transition-colors">
+                <div class="p-4 bg-[#F4F8FB] rounded-xl text-[#2F6F8F]">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-[#5F6C7B] uppercase tracking-wider">Cursos Activos</p>
+                    <p class="text-3xl font-extrabold text-[#1F2D3A] mt-1">{{ total_cursos }}</p>
+                </div>
+            </div>
+
+            <div class="bg-[#FFFFFF] p-6 rounded-2xl border border-[#E3E8EE] shadow-sm flex items-center gap-5 hover:border-[#7FC8D6] transition-colors">
+                <div class="p-4 bg-[#F4F8FB] rounded-xl text-[#2F6F8F]">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-[#5F6C7B] uppercase tracking-wider">Notas Registradas</p>
+                    <p class="text-3xl font-extrabold text-[#1F2D3A] mt-1">{{ total_notas }}</p>
+                </div>
+            </div>
+
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-amber-500 hover:shadow-lg transition">
-            <h3 class="text-xl font-bold mb-2 text-slate-800">Tarjeta de Calificaciones</h3>
-            <p class="text-slate-600 mb-6 text-sm">Ingreso de notas semestrales por estudiante y materia asignada.</p>
-            <a href="/calificaciones" class="inline-block bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded transition">
-                Registrar Notas &rarr;
-            </a>
+        <div>
+            <h2 class="text-2xl font-bold text-[#1F2D3A] mb-6">Módulos de Gestión</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                <div class="group relative bg-[#FFFFFF] rounded-2xl border border-[#E3E8EE] p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-[#7FC8D6] transition-all duration-300 flex flex-col">
+                    <div class="w-14 h-14 bg-[#F4F8FB] text-[#2F6F8F] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#2F6F8F] group-hover:text-white transition-colors duration-300">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-[#1F2D3A] mb-3">Gestión de Profesores</h3>
+                    <p class="text-[#5F6C7B] text-sm leading-relaxed flex-grow mb-8">
+                        Administra el personal docente. Crea, edita o elimina cuentas de los catedráticos del instituto.
+                    </p>
+                    <a href="/profesores" class="mt-auto w-full inline-flex items-center justify-center bg-[#2F6F8F] hover:bg-[#4A90A4] text-white text-sm font-semibold px-4 py-3 rounded-xl transition-all duration-200 focus:ring-2 focus:ring-[#7FC8D6] focus:outline-none shadow-sm">
+                        Administrar &rarr;
+                    </a>
+                </div>
+
+                <div class="group relative bg-[#FFFFFF] rounded-2xl border border-[#E3E8EE] p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-[#7FC8D6] transition-all duration-300 flex flex-col">
+                    <div class="w-14 h-14 bg-[#F4F8FB] text-[#2F6F8F] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#2F6F8F] group-hover:text-white transition-colors duration-300">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-[#1F2D3A] mb-3">Cursos y Estudiantes</h3>
+                    <p class="text-[#5F6C7B] text-sm leading-relaxed flex-grow mb-8">
+                        Controla las asignaturas impartidas y gestiona el listado de alumnos inscritos en el sistema.
+                    </p>
+                    <a href="/cursos_estudiantes" class="mt-auto w-full inline-flex items-center justify-center bg-[#2F6F8F] hover:bg-[#4A90A4] text-white text-sm font-semibold px-4 py-3 rounded-xl transition-all duration-200 focus:ring-2 focus:ring-[#7FC8D6] focus:outline-none shadow-sm">
+                        Ir a Módulo &rarr;
+                    </a>
+                </div>
+
+                <div class="group relative bg-[#FFFFFF] rounded-2xl border border-[#E3E8EE] p-8 shadow-sm hover:shadow-xl hover:-translate-y-1 hover:border-[#7FC8D6] transition-all duration-300 flex flex-col">
+                    <div class="w-14 h-14 bg-[#F4F8FB] text-[#2F6F8F] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#2F6F8F] group-hover:text-white transition-colors duration-300">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-[#1F2D3A] mb-3">Tarjeta de Notas</h3>
+                    <p class="text-[#5F6C7B] text-sm leading-relaxed flex-grow mb-8">
+                        Registra y visualiza el rendimiento académico, ingresando notas por estudiante y materia.
+                    </p>
+                    <a href="/calificaciones" class="mt-auto w-full inline-flex items-center justify-center bg-[#2F6F8F] hover:bg-[#4A90A4] text-white text-sm font-semibold px-4 py-3 rounded-xl transition-all duration-200 focus:ring-2 focus:ring-[#7FC8D6] focus:outline-none shadow-sm">
+                        Registrar Notas &rarr;
+                    </a>
+                </div>
+
+            </div>
         </div>
+
     </div>
 </div>
 {% endblock %}
