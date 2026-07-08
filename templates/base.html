@@ -154,125 +154,136 @@
         </div>
     </div>
 
+    <div id="modalConfirmacion" class="fixed inset-0 z-[70] hidden">
+        <div class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity" onclick="cerrarModalConfirmacion()"></div>
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+            <div class="relative bg-brand-card rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:max-w-md w-full border border-brand-border">
+                <div class="p-6 sm:flex sm:items-start bg-brand-card">
+                    <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-50 sm:mx-0 sm:h-10 sm:w-10">
+                        <svg class="h-6 w-6 text-brand-error" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
+                        <h3 class="text-lg font-bold text-brand-title" id="confirmacionTitulo">Confirmar Acción</h3>
+                        <div class="mt-2">
+                            <p class="text-sm text-brand-text" id="confirmacionMensaje">¿Estás seguro?</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="px-6 py-4 bg-brand-bg border-t border-brand-border flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+                    <button type="button" onclick="cerrarModalConfirmacion()" class="w-full sm:w-auto px-4 py-2 text-sm font-semibold text-brand-text hover:bg-slate-200 rounded-lg transition-colors">
+                        Cancelar
+                    </button>
+                    <button type="button" onclick="ejecutarConfirmacion()" class="w-full sm:w-auto px-4 py-2 text-sm font-semibold text-white bg-brand-error hover:bg-red-600 rounded-lg transition-colors shadow-sm focus:ring-2 focus:ring-brand-error focus:outline-none flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        Sí, Eliminar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // --- DROPDOWN MENU ---
+        /* ==========================================
+           DROPDOWN Y CONTRASEÑA
+           ========================================== */
         const dropdown = document.getElementById('userDropdown');
-        
         function toggleUserMenu() {
             if (dropdown.classList.contains('hidden')) {
                 dropdown.classList.remove('hidden');
-                setTimeout(() => {
-                    dropdown.classList.remove('opacity-0', 'scale-95');
-                    dropdown.classList.add('opacity-100', 'scale-100');
-                }, 10);
+                setTimeout(() => { dropdown.classList.remove('opacity-0', 'scale-95'); dropdown.classList.add('opacity-100', 'scale-100'); }, 10);
             } else {
-                dropdown.classList.remove('opacity-100', 'scale-100');
-                dropdown.classList.add('opacity-0', 'scale-95');
+                dropdown.classList.remove('opacity-100', 'scale-100'); dropdown.classList.add('opacity-0', 'scale-95');
                 setTimeout(() => dropdown.classList.add('hidden'), 200);
             }
         }
 
         document.addEventListener('click', (event) => {
             const container = document.getElementById('userMenuContainer');
-            if (container && !container.contains(event.target) && !dropdown.classList.contains('hidden')) {
-                toggleUserMenu();
-            }
+            if (container && !container.contains(event.target) && !dropdown.classList.contains('hidden')) toggleUserMenu();
         });
 
-        // --- MODAL CONTRASEÑA ---
         const modalPass = document.getElementById('modalPassword');
-        
         function abrirModalPassword() {
-            dropdown.classList.add('hidden'); // Cierra el dropdown al abrir
+            dropdown.classList.add('hidden');
             document.getElementById('formCambiarPassword').reset();
             modalPass.classList.remove('hidden');
         }
-
-        function cerrarModalPassword() {
-            modalPass.classList.add('hidden');
-        }
+        function cerrarModalPassword() { modalPass.classList.add('hidden'); }
 
         async function submitCambiarPassword(e) {
             e.preventDefault();
-            
             const pass_actual = document.getElementById('pass_actual').value;
             const pass_nueva = document.getElementById('pass_nueva').value;
             const pass_confirmar = document.getElementById('pass_confirmar').value;
 
-            if (pass_nueva !== pass_confirmar) {
-                mostrarToast('Las contraseñas nuevas no coinciden.', 'error');
-                return;
-            }
-
+            if (pass_nueva !== pass_confirmar) { mostrarToast('Las contraseñas no coinciden.', 'error'); return; }
             const btnSubmit = document.getElementById('btnSubmitPassword');
-            btnSubmit.disabled = true;
-            btnSubmit.innerHTML = 'Procesando...';
+            btnSubmit.disabled = true; btnSubmit.innerHTML = 'Procesando...';
 
             try {
                 const response = await fetch('/api/cambiar_password', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ pass_actual, pass_nueva })
                 });
-
                 const data = await response.json();
-
-                if (response.ok) {
-                    mostrarToast(data.success, 'success');
-                    cerrarModalPassword();
-                } else {
-                    mostrarToast(data.error || 'Error al actualizar contraseña.', 'error');
-                }
-            } catch (error) {
-                mostrarToast('Error de conexión con el servidor.', 'error');
-            } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.innerHTML = 'Guardar Cambios';
-            }
+                if (response.ok) { mostrarToast(data.success, 'success'); cerrarModalPassword(); } 
+                else { mostrarToast(data.error || 'Error al actualizar.', 'error'); }
+            } catch (error) { mostrarToast('Error de conexión.', 'error'); } 
+            finally { btnSubmit.disabled = false; btnSubmit.innerHTML = 'Guardar Cambios'; }
         }
 
-        // --- SISTEMA DE NOTIFICACIONES (TOASTS) ---
+        /* ==========================================
+           SISTEMA DE NOTIFICACIONES (TOASTS)
+           ========================================== */
         function mostrarToast(mensaje, tipo = 'success') {
             const container = document.getElementById('toastContainer');
             if (!container) return;
-
             const toast = document.createElement('div');
-            // Ancho adaptativo para móviles: w-[90vw] en pantallas chicas, luego w-72 o w-80 en grandes
             toast.className = `flex items-center gap-3 p-4 rounded-xl shadow-lg bg-brand-card border-l-4 text-sm font-semibold transition-all duration-300 transform translate-x-full opacity-0 pointer-events-auto w-[90vw] max-w-sm sm:w-80`;
 
             if (tipo === 'success') {
                 toast.classList.add('border-brand-success', 'text-brand-title');
-                toast.innerHTML = `
-                    <div class="p-1 rounded-full bg-green-50 flex-shrink-0">
-                        <svg class="w-5 h-5 text-brand-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                    </div>
-                    <span class="flex-grow">${mensaje}</span>
-                `;
+                toast.innerHTML = `<div class="p-1 rounded-full bg-green-50 flex-shrink-0"><svg class="w-5 h-5 text-brand-success" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg></div><span class="flex-grow">${mensaje}</span>`;
             } else {
                 toast.classList.add('border-brand-error', 'text-brand-title');
-                toast.innerHTML = `
-                    <div class="p-1 rounded-full bg-red-50 flex-shrink-0">
-                        <svg class="w-5 h-5 text-brand-error" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </div>
-                    <span class="flex-grow">${mensaje}</span>
-                `;
+                toast.innerHTML = `<div class="p-1 rounded-full bg-red-50 flex-shrink-0"><svg class="w-5 h-5 text-brand-error" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg></div><span class="flex-grow">${mensaje}</span>`;
             }
-
             container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.remove('translate-x-full', 'opacity-0');
-                toast.classList.add('translate-x-0', 'opacity-100');
-            }, 10);
-
-            setTimeout(() => {
-                toast.classList.remove('translate-x-0', 'opacity-100');
-                toast.classList.add('opacity-0', '-translate-y-2');
-                setTimeout(() => toast.remove(), 300);
-            }, 4000); 
+            setTimeout(() => { toast.classList.remove('translate-x-full', 'opacity-0'); toast.classList.add('translate-x-0', 'opacity-100'); }, 10);
+            setTimeout(() => { toast.classList.remove('translate-x-0', 'opacity-100'); toast.classList.add('opacity-0', '-translate-y-2'); setTimeout(() => toast.remove(), 300); }, 4000); 
         }
 
-        // --- SISTEMA DE PAGINACIÓN ---
+        /* ==========================================
+           MODAL DE CONFIRMACIÓN REUTILIZABLE (NUEVO)
+           ========================================== */
+        let callbackConfirmacion = null;
+
+        function abrirModalConfirmacion(titulo, mensaje, onConfirm) {
+            // Obtenemos los elementos directamente al llamarlo para evitar errores si el DOM cargó lento
+            document.getElementById('confirmacionTitulo').textContent = titulo;
+            document.getElementById('confirmacionMensaje').textContent = mensaje;
+            callbackConfirmacion = onConfirm; 
+            document.getElementById('modalConfirmacion').classList.remove('hidden');
+        }
+
+        function cerrarModalConfirmacion() {
+            document.getElementById('modalConfirmacion').classList.add('hidden');
+            callbackConfirmacion = null; 
+        }
+
+        // Esta función se ejecuta desde el botón rojo del HTML del modal
+        function ejecutarConfirmacion() {
+            if (callbackConfirmacion) {
+                callbackConfirmacion(); 
+            }
+            cerrarModalConfirmacion(); 
+        }
+
+        /* ==========================================
+           SISTEMA DE PAGINACIÓN
+           ========================================== */
         function inicializarPaginacion({ data, registrosPorPagina = 10, containerTablaId, containerPaginacionId, renderFilaFunc }) {
             let paginaActual = 1;
             const totalPaginas = Math.ceil(data.length / registrosPorPagina);
@@ -280,24 +291,16 @@
             function cambiarPagina(nuevaPagina) {
                 if (nuevaPagina < 1 || nuevaPagina > totalPaginas) return;
                 paginaActual = nuevaPagina;
-                renderizarTabla();
-                renderizarControles();
+                renderizarTabla(); renderizarControles();
             }
 
             function renderizarTabla() {
                 const tbody = document.getElementById(containerTablaId);
                 if (!tbody) return;
                 tbody.innerHTML = '';
-
-                if (data.length === 0) {
-                    renderFilaFunc(null, tbody);
-                    return;
-                }
-
+                if (data.length === 0) { renderFilaFunc(null, tbody); return; }
                 const inicio = (paginaActual - 1) * registrosPorPagina;
-                const fin = inicio + registrosPorPagina;
-                const itemsPagina = data.slice(inicio, fin);
-
+                const itemsPagina = data.slice(inicio, inicio + registrosPorPagina);
                 itemsPagina.forEach(item => renderFilaFunc(item, tbody));
             }
 
@@ -305,23 +308,19 @@
                 const container = document.getElementById(containerPaginacionId);
                 if (!container) return;
                 container.innerHTML = '';
-
                 if (totalPaginas <= 1) return;
 
                 const nav = document.createElement('nav');
                 nav.className = 'flex items-center justify-center space-x-1 mt-6 text-sm font-semibold text-brand-text';
 
-                // Botón Anterior
                 const btnAnt = document.createElement('button');
                 btnAnt.className = `p-2 rounded-lg transition-colors duration-200 flex items-center justify-center ${paginaActual === 1 ? 'opacity-40 cursor-not-allowed pointer-events-none' : 'hover:bg-brand-border hover:text-brand-title'}`;
                 btnAnt.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>`;
                 btnAnt.onclick = () => cambiarPagina(paginaActual - 1);
                 nav.appendChild(btnAnt);
 
-                // Números de página
-                const rangoMaximo = 2; 
                 for (let i = 1; i <= totalPaginas; i++) {
-                    if (i === 1 || i === totalPaginas || (i >= paginaActual - rangoMaximo && i <= paginaActual + rangoMaximo)) {
+                    if (i === 1 || i === totalPaginas || (i >= paginaActual - 2 && i <= paginaActual + 2)) {
                         const btnNum = document.createElement('button');
                         btnNum.innerText = i;
                         btnNum.className = `w-9 h-9 flex items-center justify-center rounded-lg transition-all duration-200 ${paginaActual === i ? 'bg-brand-btn text-white shadow-md cursor-default' : 'hover:bg-brand-border hover:text-brand-title'}`;
@@ -332,22 +331,18 @@
                         puntos.innerText = '...';
                         puntos.className = 'px-1 text-brand-text select-none';
                         nav.appendChild(puntos);
-                        
-                        if (i === 2) i = paginaActual - rangoMaximo - 1;
+                        if (i === 2) i = paginaActual - 2 - 1;
                         else if (i === totalPaginas - 1) i = totalPaginas - 1;
                     }
                 }
 
-                // Botón Siguiente
                 const btnSig = document.createElement('button');
                 btnSig.className = `p-2 rounded-lg transition-colors duration-200 flex items-center justify-center ${paginaActual === totalPaginas ? 'opacity-40 cursor-not-allowed pointer-events-none' : 'hover:bg-brand-border hover:text-brand-title'}`;
                 btnSig.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>`;
                 btnSig.onclick = () => cambiarPagina(paginaActual + 1);
                 nav.appendChild(btnSig);
-
                 container.appendChild(nav);
             }
-
             cambiarPagina(1);
         }
     </script>

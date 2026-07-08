@@ -192,7 +192,7 @@
 </div>
 
 <script>
-    // FUNCIONES ASÍNCRONAS DE API MANTENIDAS
+    // FUNCIONES ASÍNCRONAS DE API
     function abrirModalNota(id, alumno, nota) {
         document.getElementById('edit_calificacion_id').value = id;
         document.getElementById('lbl_estudiante').innerText = alumno;
@@ -232,14 +232,22 @@
         } catch { mostrarToast("Error de red.", 'error'); }
     }
 
-    async function eliminarCalificacionAsincrona(id) {
-        if (!confirm('¿Seguro que deseas eliminar esta calificación?')) return;
-        try {
-            let res = await fetch(`/api/calificaciones/eliminar/${id}`, { method: 'DELETE' });
-            let r = await res.json();
-            if (res.ok) { mostrarToast(r.success, 'success'); setTimeout(() => window.location.reload(), 1000); } 
-            else { mostrarToast(r.error, 'error'); }
-        } catch { mostrarToast("Error de red.", 'error'); }
+    // =================================================================
+    // NUEVA FUNCIÓN DE ELIMINACIÓN (Usando el modal reutilizable)
+    // =================================================================
+    function eliminarCalificacionAsincrona(id) {
+        abrirModalConfirmacion(
+            "Eliminar Calificación",
+            "¿Estás seguro de que deseas eliminar este registro de calificación? Esta acción no se puede deshacer.",
+            async () => {
+                try {
+                    let res = await fetch(`/api/calificaciones/eliminar/${id}`, { method: 'DELETE' });
+                    let r = await res.json();
+                    if (res.ok) { mostrarToast(r.success, 'success'); setTimeout(() => window.location.reload(), 1000); } 
+                    else { mostrarToast(r.error, 'error'); }
+                } catch { mostrarToast("Error de red al eliminar.", 'error'); }
+            }
+        );
     }
 
     // LÓGICA DE FILTROS Y TABLA

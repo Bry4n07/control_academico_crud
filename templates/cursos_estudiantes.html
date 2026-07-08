@@ -141,7 +141,7 @@
                     <input type="text" id="carnet_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] placeholder-[#a0aec0] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]" placeholder="Autogenerado si vacío">
                 </div>
                 <div>
-                    <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Correo Electrónico</label>
+                    <label class="block text-[#1F2D3A] text-xs font-bold mb-1.5">Correo Electrónico (Opcional)</label>
                     <input type="email" id="correo_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2 focus:ring-[#7FC8D6]/20 bg-[#FFFFFF]">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -221,11 +221,11 @@
                 <input type="text" id="edit_nombre_estudiante" required class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2">
             </div>
             <div>
-                <label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Correo Electrónico</label>
+                <label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Correo Electrónico (Opcional)</label>
                 <input type="email" id="edit_correo_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2">
             </div>
             <div>
-                <label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Teléfono</label>
+                <label class="block text-xs font-bold mb-1 text-[#1F2D3A]">Teléfono (Opcional)</label>
                 <input type="text" id="edit_telefono_estudiante" class="w-full border border-[#E3E8EE] rounded-lg px-4 py-2 text-sm text-[#1F2D3A] focus:outline-none focus:border-[#7FC8D6] focus:ring-2">
             </div>
             <div class="flex justify-end space-x-2 pt-2">
@@ -267,20 +267,20 @@
     // --- LÓGICA DE MODAL GLOBAL REGISTROS CON TABS ---
     function abrirModalRegistroGlobal() {
         document.getElementById('modalGlobal').classList.remove('hidden');
-        cambiarTabGlobal('estudiante'); // Pestaña inicial por defecto
+        cambiarTabGlobal('estudiante'); 
     }
+    
     function cerrarModalRegistroGlobal() {
         document.getElementById('modalGlobal').classList.add('hidden');
     }
+    
     function cambiarTabGlobal(tabName) {
-        // Ocultar todos los forms y resetear estilos de las pestañas
         ['estudiante', 'materia', 'curso'].forEach(name => {
             document.getElementById(`form-tab-${name}`).classList.add('hidden');
             const btn = document.getElementById(`tab-${name}`);
             btn.className = "flex-1 py-3 text-center border-b-2 border-transparent text-[#5F6C7B] hover:text-[#1F2D3A] transition-all";
         });
         
-        // Activar la seleccionada
         document.getElementById(`form-tab-${tabName}`).classList.remove('hidden');
         const activeBtn = document.getElementById(`tab-${tabName}`);
         activeBtn.className = "flex-1 py-3 text-center border-b-2 border-[#2F6F8F] text-[#2F6F8F] font-bold transition-all";
@@ -333,12 +333,10 @@
 
     // --- INICIALIZADOR PRINCIPAL ---
     document.addEventListener('DOMContentLoaded', () => {
-        // Actualizar badges numéricos de totales antes de paginar
         document.getElementById('badge-count-mat').innerText = materiasData.length;
         document.getElementById('badge-count-cur').innerText = cursosData.length;
         document.getElementById('badge-count-est').innerText = `${estudiantesData.length} Alumnos`;
 
-        // Disparar las 3 paginaciones delegadas a base.html
         inicializarPaginacion({ data: materiasData, registrosPorPagina: 5, containerTablaId: 'tbody-materias', containerPaginacionId: 'paginacion-materias', renderFilaFunc: renderFilaMateria });
         inicializarPaginacion({ data: cursosData, registrosPorPagina: 5, containerTablaId: 'tbody-cursos', containerPaginacionId: 'paginacion-cursos', renderFilaFunc: renderFilaCurso });
         inicializarPaginacion({ data: estudiantesData, registrosPorPagina: 10, containerTablaId: 'tbody-estudiantes', containerPaginacionId: 'paginacion-estudiantes', renderFilaFunc: renderFilaEstudiante });
@@ -351,21 +349,159 @@
         document.getElementById('edit_semestre_materia').value = semestre;
         document.getElementById('modalMateria').classList.remove('hidden');
     }
+    
+    // --- ESTA ES LA FUNCIÓN CORREGIDA ---
     function abrirModalEstudiante(id, nombre, correo, telefono) {
         document.getElementById('edit_estudiante_id').value = id;
         document.getElementById('edit_nombre_estudiante').value = nombre;
-        document.getElementById('edit_correo_estudiante').value = correo;
-        document.getElementById('edit_telefono_estudiante').value = telefono;
+        
+        // Limpiamos los placeholders del backend para que no den error de validación HTML5
+        document.getElementById('edit_correo_estudiante').value = (correo === 'Sin Correo') ? '' : correo;
+        document.getElementById('edit_telefono_estudiante').value = (telefono === 'N/A' || telefono === 'None' || telefono === 'null') ? '' : telefono;
+        
         document.getElementById('modalEstudiante').classList.remove('hidden');
     }
 
-    async function guardarMateriaAsincrona(e) { if(e) e.preventDefault(); let nom=document.getElementById('nombre_materia').value.trim(), sem=document.getElementById('semestre_materia').value; try { let res=await fetch('/api/materias/crear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre_materia:nom,semestre:parseInt(sem)})}); let r=await res.json(); if(res.ok){ cerrarModalRegistroGlobal(); mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error de red.",'error'); } return false; }
-    async function guardarEdicionMateriaAsincrona(e) { if(e) e.preventDefault(); let id=document.getElementById('edit_materia_id').value, nom=document.getElementById('edit_nombre_materia').value.trim(), sem=document.getElementById('edit_semestre_materia').value; try { let res=await fetch(`/api/materias/editar/${id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre_materia:nom,semestre:parseInt(sem)})}); let r=await res.json(); if(res.ok){ document.getElementById('modalMateria').classList.add('hidden'); mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error al editar.",'error'); } return false; }
-    async function eliminarMateriaAsincrona(id) { if(!confirm('¿Eliminar materia?')) return; try { let res=await fetch(`/api/materias/eliminar/${id}`,{method:'DELETE'}); let r=await res.json(); if(res.ok){ mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error.",'error'); } }
-    async function guardarCursoAsincrono(e) { if(e) e.preventDefault(); let mat=document.getElementById('materia_id').value, sec=document.getElementById('seccion_curso').value.trim(); try { let res=await fetch('/api/cursos/crear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({materia_id:parseInt(mat),seccion:sec})}); let r=await res.json(); if(res.ok){ cerrarModalRegistroGlobal(); mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error de red.",'error'); } return false; }
-    async function eliminarCursoAsincrono(id) { if(!confirm('¿Quitar asignación?')) return; try { let res=await fetch(`/api/cursos/eliminar/${id}`,{method:'DELETE'}); let r=await res.json(); if(res.ok){ mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error de red.",'error'); } }
-    async function guardarEstudianteAsincrono(e) { if(e) e.preventDefault(); let nom=document.getElementById('nombre_estudiante').value.trim(), car=document.getElementById('carnet_estudiante').value.trim(), cor=document.getElementById('correo_estudiante').value.trim(), tel=document.getElementById('telefono_estudiante').value.trim(), nac=document.getElementById('nacimiento_estudiante').value; try { let res=await fetch('/api/estudiantes/crear',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre:nom,carnet:car,correo:cor,telefono:tel,fecha_nacimiento:nac})}); let r=await res.json(); if(res.ok){ cerrarModalRegistroGlobal(); mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error.",'error'); } return false; }
-    async function guardarEdicionEstudianteAsincrona(e) { if(e) e.preventDefault(); let id=document.getElementById('edit_estudiante_id').value, nom=document.getElementById('edit_nombre_estudiante').value.trim(), cor=document.getElementById('edit_correo_estudiante').value.trim(), tel=document.getElementById('edit_telefono_estudiante').value.trim(); try { let res=await fetch(`/api/estudiantes/editar/${id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nombre:nom,correo:cor,telefono:tel})}); let r=await res.json(); if(res.ok){ document.getElementById('modalEstudiante').classList.add('hidden'); mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error.",'error'); } return false; }
-    async function eliminarEstudianteAsincrono(id) { if(!confirm('¿Dar de baja al estudiante?')) return; try { let res=await fetch(`/api/estudiantes/eliminar/${id}`,{method:'DELETE'}); let r=await res.json(); if(res.ok){ mostrarToast(r.success,'success'); setTimeout(()=>window.location.reload(),1000); }else{ mostrarToast(r.error,'error'); } } catch { mostrarToast("Error.",'error'); } }
+    // Funciones de Guardar / Editar
+    async function guardarMateriaAsincrona(e) {
+        if(e) e.preventDefault();
+        let nom = document.getElementById('nombre_materia').value.trim();
+        let sem = document.getElementById('semestre_materia').value;
+        try {
+            let res = await fetch('/api/materias/crear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre_materia: nom, semestre: parseInt(sem) })
+            });
+            let r = await res.json();
+            if(res.ok) { cerrarModalRegistroGlobal(); mostrarToast(r.success, 'success'); setTimeout(() => window.location.reload(), 1000); }
+            else { mostrarToast(r.error, 'error'); }
+        } catch { mostrarToast("Error de red.", 'error'); }
+        return false;
+    }
+
+    async function guardarEdicionMateriaAsincrona(e) {
+        if(e) e.preventDefault();
+        let id = document.getElementById('edit_materia_id').value;
+        let nom = document.getElementById('edit_nombre_materia').value.trim();
+        let sem = document.getElementById('edit_semestre_materia').value;
+        try {
+            let res = await fetch(`/api/materias/editar/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre_materia: nom, semestre: parseInt(sem) })
+            });
+            let r = await res.json();
+            if(res.ok) { document.getElementById('modalMateria').classList.add('hidden'); mostrarToast(r.success, 'success'); setTimeout(() => window.location.reload(), 1000); }
+            else { mostrarToast(r.error, 'error'); }
+        } catch { mostrarToast("Error al editar.", 'error'); }
+        return false;
+    }
+
+    async function guardarCursoAsincrono(e) {
+        if(e) e.preventDefault();
+        let mat = document.getElementById('materia_id').value;
+        let sec = document.getElementById('seccion_curso').value.trim();
+        try {
+            let res = await fetch('/api/cursos/crear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ materia_id: parseInt(mat), seccion: sec })
+            });
+            let r = await res.json();
+            if(res.ok) { cerrarModalRegistroGlobal(); mostrarToast(r.success, 'success'); setTimeout(() => window.location.reload(), 1000); }
+            else { mostrarToast(r.error, 'error'); }
+        } catch { mostrarToast("Error de red.", 'error'); }
+        return false;
+    }
+
+    async function guardarEstudianteAsincrono(e) {
+        if(e) e.preventDefault();
+        let nom = document.getElementById('nombre_estudiante').value.trim();
+        let car = document.getElementById('carnet_estudiante').value.trim();
+        let cor = document.getElementById('correo_estudiante').value.trim();
+        let tel = document.getElementById('telefono_estudiante').value.trim();
+        let nac = document.getElementById('nacimiento_estudiante').value;
+        try {
+            let res = await fetch('/api/estudiantes/crear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre: nom, carnet: car, correo: cor, telefono: tel, fecha_nacimiento: nac })
+            });
+            let r = await res.json();
+            if(res.ok) { cerrarModalRegistroGlobal(); mostrarToast(r.success, 'success'); setTimeout(() => window.location.reload(), 1000); }
+            else { mostrarToast(r.error, 'error'); }
+        } catch { mostrarToast("Error.", 'error'); }
+        return false;
+    }
+
+    async function guardarEdicionEstudianteAsincrona(e) {
+        if(e) e.preventDefault();
+        let id = document.getElementById('edit_estudiante_id').value;
+        let nom = document.getElementById('edit_nombre_estudiante').value.trim();
+        let cor = document.getElementById('edit_correo_estudiante').value.trim();
+        let tel = document.getElementById('edit_telefono_estudiante').value.trim();
+        try {
+            let res = await fetch(`/api/estudiantes/editar/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre: nom, correo: cor, telefono: tel })
+            });
+            let r = await res.json();
+            if(res.ok) { document.getElementById('modalEstudiante').classList.add('hidden'); mostrarToast(r.success, 'success'); setTimeout(() => window.location.reload(), 1000); }
+            else { mostrarToast(r.error, 'error'); }
+        } catch { mostrarToast("Error.", 'error'); }
+        return false;
+    }
+
+    // =================================================================
+    // NUEVAS FUNCIONES DE ELIMINACIÓN (Usando el modal reutilizable)
+    // =================================================================
+    
+    function eliminarMateriaAsincrona(id) {
+        abrirModalConfirmacion(
+            "Eliminar Materia",
+            "¿Estás seguro de que deseas eliminar esta materia del catálogo? Esta acción no se puede deshacer.",
+            async () => {
+                try {
+                    let res = await fetch(`/api/materias/eliminar/${id}`, { method: 'DELETE' });
+                    let r = await res.json();
+                    if(res.ok) { mostrarToast(r.success, 'success'); setTimeout(() => window.location.reload(), 1000); }
+                    else { mostrarToast(r.error, 'error'); }
+                } catch { mostrarToast("Error de red al eliminar.", 'error'); }
+            }
+        );
+    }
+
+    function eliminarCursoAsincrono(id) {
+        abrirModalConfirmacion(
+            "Quitar Asignación",
+            "¿Estás seguro de que deseas quitar este curso asignado? Esto no se puede deshacer.",
+            async () => {
+                try {
+                    let res = await fetch(`/api/cursos/eliminar/${id}`, { method: 'DELETE' });
+                    let r = await res.json();
+                    if(res.ok) { mostrarToast(r.success, 'success'); setTimeout(() => window.location.reload(), 1000); }
+                    else { mostrarToast(r.error, 'error'); }
+                } catch { mostrarToast("Error de red al eliminar.", 'error'); }
+            }
+        );
+    }
+
+    function eliminarEstudianteAsincrono(id) {
+        abrirModalConfirmacion(
+            "Dar de Baja",
+            "¿Estás seguro de dar de baja a este estudiante? Toda su información y expediente serán eliminados permanentemente.",
+            async () => {
+                try {
+                    let res = await fetch(`/api/estudiantes/eliminar/${id}`, { method: 'DELETE' });
+                    let r = await res.json();
+                    if(res.ok) { mostrarToast(r.success, 'success'); setTimeout(() => window.location.reload(), 1000); }
+                    else { mostrarToast(r.error, 'error'); }
+                } catch { mostrarToast("Error de red al eliminar.", 'error'); }
+            }
+        );
+    }
+
 </script>
 {% endblock %}

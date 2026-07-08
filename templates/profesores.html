@@ -377,28 +377,31 @@
     }
 
     /* ==========================================
-       ELIMINACIÓN
+       ELIMINACIÓN CON MODAL REUTILIZABLE
        ========================================== */
-    async function eliminarProfesorAsincrono(id) {
-        // Podríamos hacer un modal personalizado aquí en el futuro en vez de 'confirm'
-        if (!confirm('¿Estás seguro de que deseas eliminar este usuario del sistema?')) return;
+    function eliminarProfesorAsincrono(id) {
+        abrirModalConfirmacion(
+            "Eliminar Profesor",
+            "¿Estás seguro de que deseas eliminar este usuario del sistema? Los datos se perderán permanentemente y no se podrá deshacer esta acción.",
+            async () => {
+                try {
+                    let response = await fetch(`/api/profesores/eliminar/${id}`, {
+                        method: 'DELETE'
+                    });
+                    let result = await response.json();
 
-        try {
-            let response = await fetch(`/api/profesores/eliminar/${id}`, {
-                method: 'DELETE'
-            });
-            let result = await response.json();
+                    if (!response.ok) {
+                        mostrarToast(result.error, 'error');
+                        return;
+                    }
 
-            if (!response.ok) {
-                mostrarToast(result.error, 'error');
-                return;
+                    mostrarToast(result.success, 'success');
+                    setTimeout(() => window.location.reload(), 1000);
+                } catch (error) {
+                    mostrarToast("Error de red al intentar eliminar el registro.", 'error');
+                }
             }
-
-            mostrarToast(result.success, 'success');
-            setTimeout(() => window.location.reload(), 1000);
-        } catch (error) {
-            mostrarToast("Error de red al intentar eliminar el registro.", 'error');
-        }
+        );
     }
 </script>
 {% endblock %}
