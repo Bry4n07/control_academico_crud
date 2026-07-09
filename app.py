@@ -21,7 +21,7 @@ def get_db_connection():
         host="mysql-255ba0d4-schoolu.c.aivencloud.com",
         port=19450,
         user="avnadmin",
-        password="DB_PASSWORD",
+        password=os.environ.get('DB_PASSWORD'),
         database="defaultdb"
 
     )
