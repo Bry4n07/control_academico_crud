@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentación Técnica Oficial | School U</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        .table-container { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .badge { display: inline-flex; align-items: center; padding: 0.125rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+        .badge-pk { background-color: #dbeafe; color: #1e40af; }
+        .badge-fk { background-color: #fef3c7; color: #92400e; }
+        .badge-type { background-color: #e2e8f0; color: #334155; font-family: monospace; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-sky-200 selection:text-sky-900">
+
+    <div class="min-h-screen flex flex-col md:flex-row">
+        
+        <aside class="w-full md:w-64 bg-slate-900 text-slate-300 flex-shrink-0 md:fixed md:h-screen overflow-y-auto z-10">
+            <div class="p-6">
+                <h2 class="text-white text-2xl font-bold tracking-tight">School U</h2>
+                <p class="text-sky-400 text-sm mt-1 font-medium">Documentación Técnica</p>
+            </div>
+            <nav class="px-4 pb-6 space-y-1">
+                <a href="#arquitectura" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 hover:text-white transition-colors">1. Arquitectura de Software</a>
+                <a href="#modelo-datos" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 hover:text-white transition-colors">2. Modelo Entidad-Relación</a>
+                <a href="#diccionario" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 hover:text-white transition-colors">3. Diccionario de Datos</a>
+                <a href="#reglas-negocio" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 hover:text-white transition-colors">4. Reglas de Negocio (Backend)</a>
+                <a href="#despliegue" class="block px-3 py-2 rounded-md text-sm font-medium hover:bg-slate-800 hover:text-white transition-colors">5. Guía de Despliegue DevOps</a>
+            </nav>
+        </aside>
+
+        <main class="flex-1 md:ml-64 p-4 sm:p-8 lg:p-12 xl:p-16 max-w-6xl mx-auto w-full overflow-hidden">
+            
+            <header class="mb-12 border-b border-slate-200 pb-8">
+                <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">Especificaciones Técnicas del Sistema</h1>
+                <p class="text-lg text-slate-600 leading-relaxed">
+                    Documentación exhaustiva de la arquitectura, modelo de persistencia relacional, restricciones lógicas y configuración de infraestructura en la nube del Sistema de Control Académico Web.
+                </p>
+            </header>
+
+            <section id="arquitectura" class="mb-16 scroll-mt-16">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center">
+                    <span class="bg-sky-100 text-sky-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm flex-shrink-0">1</span>
+                    Arquitectura de Software y Topología
+                </h2>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8">
+                    <p class="text-slate-600 mb-6 leading-relaxed">
+                        La plataforma ha sido diseñada utilizando el patrón arquitectónico Cliente-Servidor estructurado en tres capas lógicas. Este diseño asegura una alta cohesión, bajo acoplamiento y escalabilidad horizontal en entornos de producción.
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="border border-slate-100 rounded-lg p-5 bg-slate-50">
+                            <h3 class="font-bold text-slate-800 mb-2">Capa de Presentación</h3>
+                            <p class="text-sm text-slate-600">Construida con HTML5 semántico, utilidades CSS mediante Tailwind CSS y control del DOM con JavaScript. Las vistas son renderizadas de forma dinámica en el servidor (SSR) mediante el motor de plantillas Jinja2.</p>
+                        </div>
+                        <div class="border border-slate-100 rounded-lg p-5 bg-slate-50">
+                            <h3 class="font-bold text-slate-800 mb-2">Capa de Lógica (Backend)</h3>
+                            <p class="text-sm text-slate-600">Desarrollada en Python utilizando el microframework Flask. El enrutamiento, validación de sesiones y reglas de negocio se ejecutan aquí. El despliegue se gestiona en Render.com empleando Gunicorn (WSGI).</p>
+                        </div>
+                        <div class="border border-slate-100 rounded-lg p-5 bg-slate-50">
+                            <h3 class="font-bold text-slate-800 mb-2">Capa de Persistencia</h3>
+                            <p class="text-sm text-slate-600">Almacenamiento relacional operado por un clúster de MySQL alojado en Aiven.io. La comunicación desde el backend se realiza mediante mysql-connector-python aplicando cifrado TLS y variables de entorno.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="modelo-datos" class="mb-16 scroll-mt-16">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center">
+                    <span class="bg-sky-100 text-sky-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm flex-shrink-0">2</span>
+                    Modelo Entidad-Relación (MER)
+                </h2>
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 sm:p-8 text-slate-600 leading-relaxed">
+                    <p class="mb-4">
+                        El esquema relacional está normalizado hasta la Tercera Forma Normal (3FN) para garantizar la integridad referencial y evitar anomalías de inserción, actualización o borrado. El núcleo operativo vincula cinco entidades primarias.
+                    </p>
+                    <ul class="space-y-3 list-disc pl-5">
+                        <li>La tabla <strong>profesores</strong> y <strong>materias</strong> representan catálogos independientes.</li>
+                        <li>La tabla <strong>asignaciones</strong> actúa como una entidad pivote que resuelve la cardinalidad de muchos a muchos (N:M) entre profesores y materias, especificando además la sección impartida.</li>
+                        <li>La tabla <strong>estudiantes</strong> mantiene los expedientes físicos de los alumnos matriculados.</li>
+                        <li>La tabla <strong>calificaciones</strong> vincula directamente al estudiante con una asignación específica, asegurando mediante un constraint UNIQUE que un estudiante no posea dos notas finales para la misma asignación.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="diccionario" class="mb-16 scroll-mt-16">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center">
+                    <span class="bg-sky-100 text-sky-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm flex-shrink-0">3</span>
+                    Diccionario de Datos
+                </h2>
+                
+                <div class="space-y-10">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-slate-800 px-6 py-4">
+                            <h3 class="text-white font-semibold tracking-wide">Tabla: profesores</h3>
+                            <p class="text-slate-400 text-xs mt-1">Almacena credenciales y datos del personal docente y administrativo.</p>
+                        </div>
+                        <div class="table-container">
+                            <table class="min-w-full text-left border-collapse table-auto">
+                                <thead>
+                                    <tr class="bg-slate-100 border-b-2 border-slate-200">
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-1/4">Campo</th>
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-1/6">Tipo</th>
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-1/6">Llaves</th>
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-5/12">Descripción y Reglas</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200">
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">id</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">INT(11)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-pk">PK</span></td>
+                                        <td class="px-6 py-4 text-slate-600">Identificador único autoincremental.</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">nombre</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">VARCHAR(100)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                                        <td class="px-6 py-4 text-slate-600">Nombre completo. NOT NULL. Sanitizado contra caracteres numéricos.</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">usuario</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">VARCHAR(50)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type bg-purple-100 text-purple-800">UNIQUE</span></td>
+                                        <td class="px-6 py-4 text-slate-600">Credencial de acceso al sistema.</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">password</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">VARCHAR(255)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                                        <td class="px-6 py-4 text-slate-600">Almacena el hash Scrypt. Longitud mínima pre-hash de 5 caracteres.</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">rol</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">ENUM</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                                        <td class="px-6 py-4 text-slate-600">Valores permitidos: 'admin', 'profesor'. Default: 'profesor'.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-slate-800 px-6 py-4">
+                            <h3 class="text-white font-semibold tracking-wide">Tabla: estudiantes</h3>
+                            <p class="text-slate-400 text-xs mt-1">Gestión de expedientes de alumnos matriculados.</p>
+                        </div>
+                        <div class="table-container">
+                            <table class="min-w-full text-left border-collapse table-auto">
+                                <thead>
+                                    <tr class="bg-slate-100 border-b-2 border-slate-200">
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-1/4">Campo</th>
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-1/6">Tipo</th>
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-1/6">Llaves</th>
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-5/12">Descripción y Reglas</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200">
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">id</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">INT(11)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-pk">PK</span></td>
+                                        <td class="px-6 py-4 text-slate-600">Identificador único autoincremental.</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">carnet</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">VARCHAR(20)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type bg-purple-100 text-purple-800">UNIQUE</span></td>
+                                        <td class="px-6 py-4 text-slate-600">Identificador institucional generado automáticamente (2026-XXXX).</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">nombre</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">VARCHAR(100)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                                        <td class="px-6 py-4 text-slate-600">Nombre del alumno. NOT NULL.</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">correo</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">VARCHAR(100)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                                        <td class="px-6 py-4 text-slate-600">Contacto digital. NOT NULL. Permite valor por defecto 'Sin Correo'.</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">telefono</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">VARCHAR(15)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                                        <td class="px-6 py-4 text-slate-600">Número telefónico de contacto. Permite NULL.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="bg-slate-800 px-6 py-4">
+                            <h3 class="text-white font-semibold tracking-wide">Tabla: asignaciones & calificaciones</h3>
+                            <p class="text-slate-400 text-xs mt-1">Entidades de relación para carga docente y notas.</p>
+                        </div>
+                        <div class="table-container">
+                            <table class="min-w-full text-left border-collapse table-auto">
+                                <thead>
+                                    <tr class="bg-slate-100 border-b-2 border-slate-200">
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-1/4">Tabla . Campo</th>
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-1/6">Tipo</th>
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-1/6">Llaves</th>
+                                        <th class="px-6 py-4 text-slate-700 font-semibold uppercase text-xs tracking-wider w-5/12">Descripción y Restricciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-200">
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">asignaciones . profesor_id</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">INT(11)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-fk">FK</span></td>
+                                        <td class="px-6 py-4 text-slate-600">Referencia a profesores(id). ON DELETE CASCADE.</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">asignaciones . materia_id</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">INT(11)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-fk">FK</span></td>
+                                        <td class="px-6 py-4 text-slate-600">Referencia a materias(id). Restringe borrado si hay materias ligadas.</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">asignaciones . seccion</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">VARCHAR(5)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                                        <td class="px-6 py-4 text-slate-600">Define el grupo (Ej. A, B, TES). Constraint UNIQUE combinada.</td>
+                                    </tr>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-6 py-4 font-medium text-slate-900 whitespace-nowrap">calificaciones . nota</td>
+                                        <td class="px-6 py-4 whitespace-nowrap"><span class="badge badge-type">INT(11)</span></td>
+                                        <td class="px-6 py-4 whitespace-nowrap"></td>
+                                        <td class="px-6 py-4 text-slate-600">Rango validado lógicamente entre 0 y 100 puntos. NOT NULL.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="reglas-negocio" class="mb-16 scroll-mt-16">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center">
+                    <span class="bg-sky-100 text-sky-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm flex-shrink-0">4</span>
+                    Reglas de Negocio y Seguridad (Backend)
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-3">Límites Académicos Estrictos</h3>
+                        <p class="text-sm text-slate-600 mb-4">El backend implementa interceptores de consultas para proteger la carga académica:</p>
+                        <ul class="text-sm text-slate-600 space-y-2 list-disc pl-5">
+                            <li><strong>Tope Docente:</strong> Se ejecuta una instrucción <code class="bg-slate-100 px-1 rounded text-xs font-mono">COUNT()</code> previa a la inserción. Si el resultado es ≥ 2 asignaciones activas para un mismo profesor, se bloquea la transacción.</li>
+                            <li><strong>Tope Estudiantil:</strong> Ningún estudiante puede tener vinculados más de 6 registros en la tabla de calificaciones, previniendo la sobrecarga de matrícula.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-emerald-500"></div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-3">Control de Acceso y Auditoría</h3>
+                        <p class="text-sm text-slate-600 mb-4">El sistema valida el rol almacenado en la sesión de Flask en cada petición protegida:</p>
+                        <ul class="text-sm text-slate-600 space-y-2 list-disc pl-5">
+                            <li><strong>Modo Auditoría:</strong> El rol <code class="bg-slate-100 px-1 rounded text-xs font-mono">'admin'</code> posee delegación global para ajustar o revocar calificaciones de cualquier curso.</li>
+                            <li><strong>Aislamiento Docente:</strong> El rol <code class="bg-slate-100 px-1 rounded text-xs font-mono">'profesor'</code> sufre un filtrado automático a nivel de consulta SQL, visualizando exclusivamente las tablas relacionales de sus materias asignadas.</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm relative overflow-hidden md:col-span-2">
+                        <div class="absolute top-0 left-0 w-1 h-full bg-purple-500"></div>
+                        <h3 class="text-lg font-bold text-slate-900 mb-3">Criptografía y Sanitización</h3>
+                        <p class="text-sm text-slate-600 leading-relaxed">
+                            La integridad de los datos de acceso está garantizada mediante la librería <code class="bg-slate-100 px-1 rounded text-xs font-mono">werkzeug.security</code>. Toda contraseña plana que ingresa al controlador POST es convertida de inmediato en un hash mediante el método <strong>scrypt</strong>, imposibilitando la ingeniería inversa incluso si la base de datos es compromised. Previo al hash, el servidor valida estrictamente que la longitud de la cadena plana sea <strong>mayor o igual a 5 caracteres</strong>. Adicionalmente, los campos de nombre son filtrados mediante Expresiones Regulares (RegEx) para denegar el registro de caracteres numéricos.
+                        </p>
+                    </div>
+
+                </div>
+            </section>
+
+            <section id="despliegue" class="mb-16 scroll-mt-16">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6 flex items-center">
+                    <span class="bg-sky-100 text-sky-600 rounded-full w-8 h-8 flex items-center justify-center mr-3 text-sm flex-shrink-0">5</span>
+                    Guía de Despliegue (DevOps)
+                </h2>
+                <div class="bg-slate-900 rounded-xl p-6 sm:p-8 text-slate-300 shadow-lg">
+                    <p class="mb-6 leading-relaxed">
+                        El proyecto está diseñado para integración y despliegue continuo (CI/CD) vinculando el repositorio directamente a los Web Services de Render.
+                    </p>
+                    <h3 class="text-white font-semibold mb-3">Dependencias del Entorno</h3>
+                    <p class="text-sm mb-4">El empaquetado del entorno virtual se define en el archivo <code class="bg-slate-800 text-sky-300 px-2 py-1 rounded font-mono">requirements.txt</code>, requiriendo de forma obligatoria las librerías: Flask, mysql-connector-python, Werkzeug y <strong>gunicorn==22.0.0</strong> para el levantamiento en producción.</p>
+                    
+                    <h3 class="text-white font-semibold mb-3 mt-6">Comandos de Inicialización</h3>
+                    <div class="bg-black rounded-lg p-5 font-mono text-sm mb-6 border border-slate-700 space-y-3 overflow-x-auto">
+                        <div class="flex items-center min-w-[400px]"><span class="text-slate-500 w-36 flex-shrink-0">Build Command:</span> <span class="text-green-400">pip install -r requirements.txt</span></div>
+                        <div class="flex items-center min-w-[400px]"><span class="text-slate-500 w-36 flex-shrink-0">Start Command:</span> <span class="text-sky-400">gunicorn app:app</span></div>
+                    </div>
+
+                    <h3 class="text-white font-semibold mb-3">Gestión de Secretos</h3>
+                    <p class="text-sm leading-relaxed">
+                        Por normativas de seguridad, las credenciales de Aiven no se exponen en el código fuente. El archivo principal extrae la clave de la base de datos dinámicamente utilizando la instrucción <code class="bg-slate-800 text-sky-300 px-2 py-1 rounded font-mono">os.environ.get('DB_PASSWORD')</code>. Esta variable debe ser inyectada directamente en la pestaña <em>Environment</em> del panel de control de Render.
+                    </p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+</html>

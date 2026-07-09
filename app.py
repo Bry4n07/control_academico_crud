@@ -522,10 +522,15 @@ def api_cambiar_password():
         cursor.close()
         conn.close()
 
+
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login'))
+
+@app.route('/documentacion')
+def documentacion():
+    return render_template('documentacion.html')
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
