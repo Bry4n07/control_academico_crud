@@ -18,8 +18,8 @@ def get_db_connection():
 """
 def get_db_connection():
     return mysql.connector.connect(
-        host="mysql-255ba0d4-schoolu.c.aivencloud.com",
-        port=19450,
+        host="mysql-25360651-bryaneatrada45-3f1a.a.aivencloud.com",
+        port=14616,
         user="avnadmin",
         password=os.environ.get('DB_PASSWORD'),
         database="defaultdb"
